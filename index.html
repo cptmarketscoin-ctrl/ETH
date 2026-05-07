@@ -1,32 +1,40 @@
-<!doctype html><html lang=""><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+<!doctype html><html lang=""><head><meta charset="utf-8"/><base href="/ETH/"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 // API 代理配置 - 将所有 API 请求转发到后端代理服务器
-// 如果后端部署在 your-server.com，修改下面的地址
 var KLAKNA_API_PROXY = 'https://your-server.com';
-// 如果是同域部署（前后端在同一服务器），留空或设为 ''
-// 如果后端在本机测试，设为 'http://localhost:8080'
 
-// 拦截 fetch 请求，将相对路径的 API 请求代理到后端
+// GitHub Pages 子路径适配
+// 从 <base> 标签自动检测子路径
 (function() {
-  var origFetch = window.fetch;
-  window.fetch = function(url, opts) {
-    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
-      url = KLAKNA_API_PROXY + url;
-    }
-    return origFetch.call(this, url, opts);
-  };
+  var baseEl = document.querySelector('base');
+  var basePath = baseEl ? baseEl.getAttribute('href').replace(/\/$/, '') : '';
+  if (basePath) {
+    // 拦截 fetch 请求
+    var origFetch = window.fetch;
+    window.fetch = function(url, opts) {
+      if (typeof url === 'string') {
+        // API 请求代理到后端
+        if (KLAKNA_API_PROXY && url.startsWith('/')) {
+          url = KLAKNA_API_PROXY + url;
+        }
+      }
+      return origFetch.call(this, url, opts);
+    };
 
-  // 拦截 XMLHttpRequest
-  var origOpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function(method, url) {
-    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
-      url = KLAKNA_API_PROXY + url;
-    }
-    return origOpen.call(this, method, url);
-  };
+    // 拦截 XMLHttpRequest
+    var origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+      if (typeof url === 'string') {
+        if (KLAKNA_API_PROXY && url.startsWith('/')) {
+          url = KLAKNA_API_PROXY + url;
+        }
+      }
+      return origOpen.call(this, method, url);
+    };
+  }
 })();
 </script>
 </script>
-<script defer="defer" src="/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/static/js/app.1774378911945.js"></script><link href="/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/static/css/app.1774378911945.css" rel="stylesheet"><script>var KLAKNA_API_PROXY="https://your-server.com";(function(){var o=window.fetch;window.fetch=function(u,o2){if(KLAKNA_API_PROXY&&typeof u==="string"&&u.startsWith("/"))u=KLAKNA_API_PROXY+u;return o.call(this,u,o2)};var p=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){if(KLAKNA_API_PROXY&&typeof u==="string"&&u.startsWith("/"))u=KLAKNA_API_PROXY+u;return p.call(this,m,u)}})();</script></head><style>* {
+<script defer="defer" src="/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/static/js/app.1774378911945.js"></script><link href="/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
       touch-action: manipulation;
     }
     html {
