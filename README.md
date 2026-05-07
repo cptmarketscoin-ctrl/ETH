@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Klakna 前端 - GitHub Pages 部署包
 
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 文件结构
+```
+index.html          ← 入口页面（已注入 API 代理脚本）
+static/
+  css/
+    app.1774378911945.css
+    chunk-vendors.1774378911945.css
+  js/
+    app.1774378911945.js
+    chunk-vendors.1774378911945.js
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 部署步骤
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. 修改 API 代理地址
+编辑 `index.html`，找到第 29 行：
+```js
+var KLAKNA_API_PROXY = 'https://your-server.com';
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**改成你的后端服务器地址**，例如：
+```js
+// 方案 A：后端在 VPS 上
+var KLAKNA_API_PROXY = 'https://your-vps-ip:8080';
 
-## Learn More
+// 方案 B：前后端同域
+var KLAKNA_API_PROXY = '';  // 留空，不走代理
 
-To learn more about Next.js, take a look at the following resources:
+// 方案 C：本机测试
+var KLAKNA_API_PROXY = 'http://localhost:8080';
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. 上传到 GitHub Pages
+1. 在 GitHub 创建仓库（如 `BTC`）
+2. 将整个文件夹内容 push 到 `main` 分支
+3. 在仓库 Settings → Pages 中启用 GitHub Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. 确保后端 API 允许跨域（CORS）
+如果 `KLAKNA_API_PROXY` 指向不同域名，后端需设置 CORS 头：
+```js
+res.setHeader('Access-Control-Allow-Origin', 'https://your-github-pages.io');
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+原站资源 hash：1774378911945
+抓取时间：2026-05-07
