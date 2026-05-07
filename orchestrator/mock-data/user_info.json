@@ -1,0 +1,15 @@
+{
+  "code": 0,
+  "data": {
+    "id": 10001,
+    "username": "demo_user",
+    "email": "demo@klakna.com",
+    "balance": "50000.00",
+    "availableBalance": "45000.00",
+    "frozenBalance": "5000.00",
+    "vipLevel": 2,
+    "avatar": null,
+    "kycStatus": "verified",
+    "createdAt": "2025-01-15T08:30:00Z"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "code": 0,
+  "data": [
+    { "id": 1, "symbol": "BTC/USDT", "name": "Bitcoin", "price": "107542.30", "change": "+2.34", "changePercent": "2.34", "volume": "2.45B", "high": "108200.00", "low": "105800.00", "marketCap": "2.12T", "icon": "btc", "favorite": false },
+    { "id": 2, "symbol": "ETH/USDT", "name": "Ethereum", "price": "2534.18", "change": "+1.87", "changePercent": "1.87", "volume": "1.23B", "high": "2600.00", "low": "2480.00", "marketCap": "305.2B", "icon": "eth", "favorite": true },
+    { "id": 3, "symbol": "XRP/USDT", "name": "XRP", "price": "2.3410", "change": "-0.52", "changePercent": "-0.52", "volume": "890M", "high": "2.41", "low": "2.30", "marketCap": "134.5B", "icon": "xrp", "favorite": false },
+    { "id": 4, "symbol": "SOL/USDT", "name": "Solana", "price": "172.45", "change": "+4.12", "changePercent": "4.12", "volume": "567M", "high": "175.80", "low": "168.20", "marketCap": "82.1B", "icon": "sol", "favorite": true },
+    { "id": 5, "symbol": "DOGE/USDT", "name": "Dogecoin", "price": "0.4123", "change": "+8.76", "changePercent": "8.76", "volume": "345M", "high": "0.4280", "low": "0.3950", "marketCap": "60.8B", "icon": "doge", "favorite": false },
+    { "id": 6, "symbol": "ADA/USDT", "name": "Cardano", "price": "0.8912", "change": "-1.23", "changePercent": "-1.23", "volume": "234M", "high": "0.9100", "low": "0.8750", "marketCap": "31.5B", "icon": "ada", "favorite": false },
+    { "id": 7, "symbol": "AVAX/USDT", "name": "Avalanche", "price": "38.76", "change": "+3.45", "changePercent": "3.45", "volume": "189M", "high": "39.50", "low": "37.80", "marketCap": "16.2B", "icon": "avax", "favorite": false },
+    { "id": 8, "symbol": "DOT/USDT", "name": "Polkadot", "price": "7.2340", "change": "-0.89", "changePercent": "-0.89", "volume": "156M", "high": "7.45", "low": "7.10", "marketCap": "10.8B", "icon": "dot", "favorite": false },
+    { "id": 9, "symbol": "LINK/USDT", "name": "Chainlink", "price": "18.45", "change": "+2.10", "changePercent": "2.10", "volume": "123M", "high": "18.90", "low": "17.80", "marketCap": "11.5B", "icon": "link", "favorite": false },
+    { "id": 10, "symbol": "MATIC/USDT", "name": "Polygon", "price": "0.7234", "change": "+1.56", "changePercent": "1.56", "volume": "98M", "high": "0.7450", "low": "0.7100", "marketCap": "7.1B", "icon": "matic", "favorite": false },
+    { "id": 11, "symbol": "UNI/USDT", "name": "Uniswap", "price": "12.56", "change": "-0.34", "changePercent": "-0.34", "volume": "87M", "high": "12.80", "low": "12.30", "marketCap": "9.5B", "icon": "uni", "favorite": false },
+    { "id": 12, "symbol": "ATOM/USDT", "name": "Cosmos", "price": "9.87", "change": "+1.23", "changePercent": "1.23", "volume": "76M", "high": "10.10", "low": "9.65", "marketCap": "3.8B", "icon": "atom", "favorite": false }
+  ]
+}
