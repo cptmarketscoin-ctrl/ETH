@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>Klakna Exchange</title>
+<script>
+// 强制使用正确的后端URL - 绕过CDN缓存
+window.KLAKNA_API_PROXY = 'https://glenn-alike-twenty-seek.trycloudflare.com';
+console.log('[KLAKNA] Using backend:', window.KLAKNA_API_PROXY);
+</script>
+<script>
+// API拦截器
+(function() {
+  var proxy = window.KLAKNA_API_PROXY;
+  // Fetch拦截
+  var origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    if (proxy && typeof url === 'string' && url.startsWith('/')) {
+      url = proxy + url;
+    }
+    return origFetch.call(this, url, opts);
+  };
+  // XHR拦截
+  var origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url) {
+    if (proxy && typeof url === 'string' && url.startsWith('/')) {
+      url = proxy + url;
+    }
+    return origOpen.call(this, method, url);
+  };
+  // WebSocket拦截
+  var OrigWS = window.WebSocket;
+  window.WebSocket = function(url, protocols) {
+    if (proxy && typeof url === 'string') {
+      var wsProxy = proxy.replace('https://', 'wss://').replace('http://', 'ws://');
+      if (url.indexOf('/exchange/ws') !== -1) {
+        url = wsProxy + '/exchange/ws';
+      } else if (url.startsWith('/')) {
+        url = wsProxy + url;
+      }
+    }
+    return protocols ? new OrigWS(url, protocols) : new OrigWS(url);
+  };
+  window.WebSocket.prototype = OrigWS.prototype;
+})();
+</script>
+</head>
+<body>
+<h1>Redirecting to main app...</h1>
+<p>If the app doesn't load, please wait 1-2 minutes for GitHub Pages CDN to refresh.</p>
+<script>
+// 3秒后重定向到主页面
+setTimeout(function() {
+  window.location.href = './index.html?v=' + Date.now();
+}, 3000);
+</script>
+</body>
+</html>
