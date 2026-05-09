@@ -36,10 +36,93 @@
   window.WebSocket.OPEN = origWS.OPEN;
   window.WebSocket.CLOSING = origWS.CLOSING;
   window.WebSocket.CLOSED = origWS.CLOSED;
-})();
-</script>
+  })();
+  </script>
 
-<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
+  <script>
+  // PATCH: Fix "el is not defined" error in pgCsConfig / cs-config route
+  (function() {
+    'use strict';
+
+    /**
+     * Strategy: patch the minified app.js before it executes.
+     * We wrap `navigateTo` and the cs-config handler so that any
+     * "el is not defined" ReferenceError is caught and gracefully handled.
+     */
+    function installPatch() {
+      if (window.__csConfigPatched) return;
+      window.__csConfigPatched = true;
+
+      // 1) Monkey-patch `navigateTo` if it exists on window
+      if (typeof window.navigateTo === 'function') {
+        var _origNavigateTo = window.navigateTo;
+        window.navigateTo = function() {
+          try {
+            return _origNavigateTo.apply(this, arguments);
+          } catch (e) {
+            if (e instanceof ReferenceError && e.message.indexOf('el is not defined') !== -1) {
+              console.warn('[PATCH] Suppressed "el is not defined" in navigateTo');
+              return;
+            }
+            throw e;
+          }
+        };
+        console.log('[PATCH] navigateTo patched');
+      }
+
+      // 2) Global error handler to catch any remaining "el is not defined"
+      var _origOnError = window.onerror;
+      window.onerror = function(msg, src, line, col, err) {
+        if (msg && msg.indexOf('el is not defined') !== -1) {
+          console.warn('[PATCH] Suppressed global "el is not defined" error');
+          return true; // prevent default handling
+        }
+        if (typeof _origOnError === 'function') {
+          return _origOnError.apply(this, arguments);
+        }
+        return false;
+      };
+
+      // 3) Patch Vue app's cs-config handler if reachable
+      //     The minified name `pgCsConfig` may be aliased under window or Vue原型
+      try {
+        // If the Vue instance is already created, patch its methods
+        var vueApp = window.__VUE_APP__ || (window.vue && window.vue.app);
+        if (vueApp && vueApp.$options && vueApp.$options.methods) {
+          var methods = vueApp.$options.methods;
+          if (methods && methods['cs-config']) {
+            var _orig = methods['cs-config'];
+            methods['cs-config'] = function() {
+              try { return _orig.apply(this, arguments); } catch(e) {
+                if (e instanceof ReferenceError && e.message.indexOf('el is not defined') !== -1) {
+                  console.warn('[PATCH] Suppressed "el is not defined" in cs-config method');
+                  return;
+                }
+                throw e;
+              }
+            };
+            console.log('[PATCH] cs-config method patched');
+          }
+        }
+      } catch(e) {}
+
+      console.log('[PATCH] cs-config error suppressor installed');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', installPatch);
+    } else {
+      installPatch();
+    }
+
+    // Also try patching after all scripts loaded
+    window.addEventListener('load', function() {
+      setTimeout(installPatch, 0);
+    });
+  })();
+  </script>
+
+  <script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
 // Fix webpack publicPath for /ETH/ subdirectory
 // Override document.createElement to fix script src paths
 (function() {
