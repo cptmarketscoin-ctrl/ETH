@@ -1,5 +1,149 @@
 <!doctype html><html lang=""><head>
-  <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script><script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+  <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script>
+  <script>
+  // ============ COMPREHENSIVE FIX for API & Static Resource Proxy ============
+  (function() {
+    'use strict';
+    var PROXY = 'https://symbols-dpi-consolidated-peoples.trycloudflare.com';
+    var BASE_PATH = '/ETH';
+
+    /**
+     * Normalize URL: fix double /ETH/ETH/ paths
+     */
+    function normalizeUrl(url) {
+      if (typeof url !== 'string') return url;
+      // Fix double /ETH/ETH/static/ -> /ETH/static/
+      url = url.replace(/\/ETH\/ETH\//g, '/ETH/');
+      // Fix /static/ETH/static/ -> /ETH/static/
+      url = url.replace(/\/static\/ETH\/static\//g, '/ETH/static/');
+      return url;
+    }
+
+    /**
+     * Proxy URL to backend via Cloudflare Tunnel
+     */
+    function proxyUrl(url) {
+      if (!PROXY || typeof url !== 'string') return normalizeUrl(url);
+
+      // Already proxied?
+      if (url.indexOf(PROXY) !== -1) return url;
+
+      // Case 1: relative URL starting with / (but not // or /static/)
+      if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/') && !url.startsWith('/favicon')) {
+        return PROXY + url;
+      }
+
+      // Case 2: URL contains localhost:3000 -> redirect to PROXY
+      if (url.match(/https?:\/\/localhost:3000/)) {
+        var proxied = url.replace(/https?:\/\/localhost:3000/, PROXY);
+        console.log('[PROXY] Redirect localhost:3000 -> ' + proxied);
+        return proxied;
+      }
+
+      // Case 3: URL is relative to current origin and is an API call
+      if (!url.match(/^https?:\/\//) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+        // Likely an API call - proxy it
+        return PROXY + (url.startsWith('/') ? url : '/' + url);
+      }
+
+      return normalizeUrl(url);
+    }
+
+    // ===== 1. Intercept fetch =====
+    var origFetch = window.fetch;
+    window.fetch = function(url, opts) {
+      arguments[0] = proxyUrl(url);
+      return origFetch.apply(this, arguments);
+    };
+
+    // ===== 2. Intercept XMLHttpRequest =====
+    var origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+      var args = Array.prototype.slice.call(arguments);
+      args[1] = proxyUrl(url);
+      return origOpen.apply(this, args);
+    };
+
+    // ===== 3. Intercept WebSocket =====
+    var origWS = window.WebSocket;
+    window.WebSocket = function(url, protocols) {
+      if (typeof url === 'string') {
+        url = proxyUrl(url);
+        // Fix WebSocket protocol
+        if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
+        if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
+        if (url.indexOf('localhost:3000') !== -1) url = url.replace('localhost:3000', PROXY.replace('https://', 'wss://').replace('http://', 'ws://'));
+      }
+      return protocols ? new origWS(url, protocols) : new origWS(url);
+    };
+    window.WebSocket.prototype = origWS.prototype;
+    window.WebSocket.CONNECTING = origWS.CONNECTING;
+    window.WebSocket.OPEN = origWS.OPEN;
+    window.WebSocket.CLOSING = origWS.CLOSING;
+    window.WebSocket.CLOSED = origWS.CLOSED;
+
+    // ===== 4. Fix document.createElement to patch script src =====
+    var origCreate = document.createElement;
+    document.createElement = function(tag) {
+      var el = origCreate.call(document, tag);
+      if (tag.toLowerCase() === 'script') {
+        var setAttribute = el.setAttribute;
+        el.setAttribute = function(name, value) {
+          if (name === 'src' && typeof value === 'string') {
+            value = normalizeUrl(value);
+          }
+          return setAttribute.call(this, name, value);
+        };
+        // Also intercept direct .src assignment
+        try {
+          var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+          if (srcDesc && srcDesc.set) {
+            Object.defineProperty(el, 'src', {
+              set: function(value) {
+                if (typeof value === 'string') value = normalizeUrl(value);
+                return srcDesc.set.call(this, value);
+              },
+              get: function() { return srcDesc.get.call(this); },
+              configurable: true
+            });
+          }
+        } catch(e) {}
+      }
+      return el;
+    };
+
+    // ===== 5. Patch XMLHttpRequest.send to log API calls =====
+    var origSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function(body) {
+      try {
+        var url = this._url || (this.responseURL ? this.responseURL : '');
+        if (url && url.indexOf('localhost:3000') !== -1) {
+          console.warn('[PROXY] XHR to localhost:3000 detected!');
+        }
+      } catch(e) {}
+      return origSend.call(this, body);
+    };
+
+    // ===== 6. Global error suppression for known issues =====
+    var _origOnError = window.onerror;
+    window.onerror = function(msg, src, line, col, err) {
+      if (msg && (
+        msg.indexOf('el is not defined') !== -1 ||
+        msg.indexOf('MutationObserver is not supported') !== -1
+      )) {
+        console.warn('[PATCH] Suppressed: ' + msg);
+        return true;
+      }
+      if (typeof _origOnError === 'function') {
+        return _origOnError.apply(this, arguments);
+      }
+      return false;
+    };
+
+    console.log('[PROXY] Comprehensive proxy installed, PROXY=' + PROXY);
+  })();
+  </script>
+  <script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 (function() {
   var PROXY = 'https://symbols-dpi-consolidated-peoples.trycloudflare.com';
   function proxyUrl(url) {
