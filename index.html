@@ -1,32 +1,5 @@
-﻿<!doctype html><html lang=""><head>
-  <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script><script>window.__webpack_public_path__ = "/ETH/";</script>
-<script>
-// Debug: capture errors during init
-window.__DEBUG_ERRORS = [];
-window.addEventListener('error', function(e) {
-  window.__DEBUG_ERRORS.push({msg: e.message, src: e.filename, line: e.lineno, col: e.colno});
-});
-window.addEventListener('unhandledrejection', function(e) {
-  window.__DEBUG_ERRORS.push({type: 'unhandledrejection', reason: e.reason && e.reason.message || String(e.reason)});
-});
-// Safety fallback: force hide loading after 8s and show errors
-setTimeout(function() {
-  var el = document.querySelector('#res-loading');
-  if (el && el.style.display !== 'none') {
-    console.warn('[KLAKNA] Force hiding loading after 8s timeout');
-    console.warn('[KLAKNA] Errors captured:', JSON.stringify(window.__DEBUG_ERRORS));
-    el.style.display = 'none';
-    // Show error overlay on page
-    var div = document.createElement('div');
-    div.style.cssText = 'position:fixed;top:10px;left:10px;right:10px;z-index:999999;background:#fff3cd;color:#856404;padding:15px;border-radius:8px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:80vh;overflow:auto;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
-    var info = '[KLAKNA] Loading stuck!\n\nErrors: ' + JSON.stringify(window.__DEBUG_ERRORS, null, 2);
-    info += '\n\nFetch calls (' + (window.__FETCH_LOG || []).length + '): ' + JSON.stringify(window.__FETCH_LOG || [], null, 2);
-    info += '\n\nXHR calls (' + (window.__XHR_LOG || []).length + '): ' + JSON.stringify(window.__XHR_LOG || [], null, 2);
-    div.textContent = info;
-    document.body.appendChild(div);
-  }
-}, 8000);
-</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+<!doctype html><html lang=""><head>
+  <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script><script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 (function() {
   var PROXY = 'https://victory-suffered-annually-premiere.trycloudflare.com';
   function proxyUrl(url) {
@@ -37,19 +10,14 @@ setTimeout(function() {
   }
   // Intercept fetch
   var origFetch = window.fetch;
-  window.__FETCH_LOG = [];
   window.fetch = function(url, opts) {
-    var proxied = proxyUrl(url);
-    window.__FETCH_LOG.push({orig: url, proxied: proxied, method: (opts && opts.method) || 'GET'});
-    return origFetch.call(this, proxied, opts);
+    return origFetch.call(this, proxyUrl(url), opts);
   };
   // Intercept XHR
   var origOpen = XMLHttpRequest.prototype.open;
-  window.__XHR_LOG = [];
   XMLHttpRequest.prototype.open = function(method, url) {
     var args = Array.prototype.slice.call(arguments);
     args[1] = proxyUrl(url);
-    window.__XHR_LOG.push({orig: url, proxied: args[1], method: method});
     return origOpen.apply(this, args);
   };
   // Intercept WebSocket - redirect to backend
@@ -68,46 +36,36 @@ setTimeout(function() {
   window.WebSocket.OPEN = origWS.OPEN;
   window.WebSocket.CLOSING = origWS.CLOSING;
   window.WebSocket.CLOSED = origWS.CLOSED;
-  window.__PROXY_URL__ = PROXY;
-  window.__proxyUrl__ = proxyUrl;
-window.WebSocket.CLOSED = origWS.CLOSED;
-}());
+})();
 </script>
 
-<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet">
-<script>
+<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
 // Fix webpack publicPath for /ETH/ subdirectory
-// Override document.createElement to fix script/img src paths
+// Override document.createElement to fix script src paths
 (function() {
-  var proxyUrl = window.__proxyUrl__ || function(url) {
-    var PROXY = window.__PROXY_URL__ || "https://victory-suffered-annually-premiere.trycloudflare.com";
-    if (PROXY && typeof url === "string" && url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/static/") && !url.startsWith(PROXY) && !url.endsWith(".js") && !url.endsWith(".css") && !url.endsWith(".png") && !url.endsWith(".svg") && !url.endsWith(".woff") && !url.endsWith(".woff2") && !url.endsWith(".ttf")) {
-      return PROXY + url;
-    }
-    return url;
-  };
   var origCreate = document.createElement;
   document.createElement = function(tag) {
     var el = origCreate.call(document, tag);
-    var tagName = (tag || "").toLowerCase();
-    if (tagName === "script" || tagName === "img") {
+    if (tag.toLowerCase() === 'script') {
       var setAttribute = el.setAttribute;
       el.setAttribute = function(name, value) {
-        if ((name === "src" || name === "href") && typeof value === "string") {
-          value = proxyUrl(value);
+        if (name === 'src' && typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
+          value = '/ETH' + value;
         }
         return setAttribute.call(this, name, value);
       };
+      // Also intercept direct .src property assignment
       try {
-        var proto = tagName === "script" ? HTMLScriptElement.prototype : HTMLImageElement.prototype;
-        var desc = Object.getOwnPropertyDescriptor(proto, "src");
-        if (desc && desc.set) {
-          Object.defineProperty(el, "src", {
+        var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+        if (srcDesc && srcDesc.set) {
+          Object.defineProperty(el, 'src', {
             set: function(value) {
-              value = proxyUrl(value);
-              return desc.set.call(this, value);
+              if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
+                value = '/ETH' + value;
+              }
+              return srcDesc.set.call(this, value);
             },
-            get: function() { return desc.get.call(this); },
+            get: function() { return srcDesc.get.call(this); },
             configurable: true
           });
         }
@@ -116,7 +74,373 @@ window.WebSocket.CLOSED = origWS.CLOSED;
     return el;
   };
 })();
-</script><script>(function (d, t) {
+</script>
+
+    <script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
+
+      touch-action: manipulation;
+
+    }
+
+    html {
+
+      overscroll-behavior: none;
+
+      touch-action: pan-y;
+
+    }
+
+
+
+    body {
+
+      font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
+
+        Segoe UI, Arial, Roboto, PingFang SC, miui, Hiragino Sans GB,
+
+        Microsoft Yahei, sans-serif !important;
+
+      padding-bottom: constant(safe-area-inset-bottom);
+
+      padding-bottom: env(safe-area-inset-bottom);
+
+    }
+
+    .router-view-loading,
+
+    .global-loading {
+
+      background-color: rgba(0, 0, 0, 0.5);
+
+      z-index: 9999999;
+
+      position: fixed !important;
+
+      display: none;
+
+      width: 100vw;
+
+      height: 100vh;
+
+    }
+
+    .img {
+
+      position: absolute;
+
+      top: 50%;
+
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+    }
+
+    #res-loading {
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      z-index: 9999;
+
+      height: 100vh;
+
+      width: 100vw;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background-color: white;
+
+    }
+
+    .loader {
+
+      position: relative;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      width: 100px;
+
+      height: 100px;
+
+      perspective: 780px;
+
+    }
+
+
+
+    .project-loading-text {
+
+      font-size: 20px;
+
+      font-weight: 700;
+
+      color: #1c1c1c;
+
+      z-index: 10;
+
+    }
+
+
+
+    .load-inner {
+
+      position: absolute;
+
+      width: 100%;
+
+      height: 100%;
+
+      box-sizing: border-box;
+
+      border-radius: 50%;
+
+    }
+
+
+
+    .load-inner.load-one {
+
+      left: 0%;
+
+      top: 0%;
+
+      border-bottom: 3px solid #5c5edc;
+
+      animation: rotate1 1.15s linear infinite;
+
+    }
+
+
+
+    .load-inner.load-two {
+
+      right: 0%;
+
+      top: 0%;
+
+      border-right: 3px solid #9147ff;
+
+      animation: rotate2 1.15s 0.1s linear infinite;
+
+    }
+
+
+
+    .load-inner.load-three {
+
+      right: 0%;
+
+      bottom: 0%;
+
+      border-top: 3px solid #3b82f6;
+
+      animation: rotate3 1.15s 0.15s linear infinite;
+
+    }
+
+
+
+    @keyframes rotate1 {
+
+      0% {
+
+        transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
+
+      }
+
+      100% {
+
+        transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
+
+      }
+
+    }
+
+    @keyframes rotate2 {
+
+      0% {
+
+        transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
+
+      }
+
+      100% {
+
+        transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
+
+      }
+
+    }
+
+    @keyframes rotate3 {
+
+      0% {
+
+        transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
+
+      }
+
+      100% {
+
+        transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
+
+      }
+
+    }
+
+
+
+    .chat-widget-custom-trigger {
+
+      position: fixed;
+
+      right: 20px;
+
+      bottom: 20px;
+
+      width: 60px;
+
+      height: 60px;
+
+      border: none;
+
+      border-radius: 34px 8px 34px 34px;
+
+      background: linear-gradient(135deg, #1f8cff, #1466ff);
+
+      color: #fff;
+
+      z-index: 10001;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      box-shadow: 0 8px 22px rgba(20, 102, 255, 0.28);
+
+      cursor: pointer;
+
+      user-select: none;
+
+      -webkit-user-select: none;
+
+      touch-action: none;
+
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    }
+
+
+
+    .chat-widget-custom-trigger:active {
+
+      transform: scale(0.96);
+
+    }
+
+
+
+    .chat-widget-custom-trigger svg {
+
+      width: 30px;
+
+      height: 30px;
+
+      pointer-events: none;
+
+      fill: currentColor;
+
+    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
+
+      document.documentElement.addEventListener(
+
+        'touchstart',
+
+        function (event) {
+
+          if (event.touches.length > 1) {
+
+            event.preventDefault();
+
+          }
+
+        },
+
+        false,
+
+      );
+
+
+
+      var lastTouchEnd = 0;
+
+      document.documentElement.addEventListener(
+
+        'touchend',
+
+        function (event) {
+
+          var now = Date.now();
+
+          if (now - lastTouchEnd <= 300) {
+
+            event.preventDefault();
+
+          }
+
+          lastTouchEnd = now;
+
+        },
+
+        false,
+
+      );
+
+
+
+      document.addEventListener('gesturestart', function (event) {
+
+        event.preventDefault();
+
+      });
+
+      (function () {
+
+        async function init() {
+
+          const url = new URL(window.location.href);
+
+          const platformr = url.searchParams.get('platformr');
+
+          if (platformr) {
+
+            document.body
+
+              .querySelector('#res-loading')
+
+              .querySelector('.project-loading-text').innerHTML = platformr;
+
+          }
+
+        }
+
+        init();
+
+      })();</script><script>(function (d, t) {
 
         var STORAGE_KEY = 'chat-widget-trigger-position';
 
@@ -136,7 +460,7 @@ window.WebSocket.CLOSED = origWS.CLOSED;
 
           trigger.type = 'button';
 
-          trigger.setAttribute('aria-label', '瀹㈡湇');
+          trigger.setAttribute('aria-label', '客服');
 
           trigger.innerHTML =
 
