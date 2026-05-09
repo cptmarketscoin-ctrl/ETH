@@ -51,7 +51,44 @@ var KLAKNA_API_PROXY = 'https://grade-consecutive-dark-urban.trycloudflare.com';
 
 </script>
 
-<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
+<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
+// Fix webpack publicPath for /ETH/ subdirectory
+// Override document.createElement to fix script src paths
+(function() {
+  var origCreate = document.createElement;
+  document.createElement = function(tag) {
+    var el = origCreate.call(document, tag);
+    if (tag.toLowerCase() === 'script') {
+      var setAttribute = el.setAttribute;
+      el.setAttribute = function(name, value) {
+        if (name === 'src' && typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
+          value = '/ETH' + value;
+        }
+        return setAttribute.call(this, name, value);
+      };
+      // Also intercept direct .src property assignment
+      try {
+        var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+        if (srcDesc && srcDesc.set) {
+          Object.defineProperty(el, 'src', {
+            set: function(value) {
+              if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
+                value = '/ETH' + value;
+              }
+              return srcDesc.set.call(this, value);
+            },
+            get: function() { return srcDesc.get.call(this); },
+            configurable: true
+          });
+        }
+      } catch(e) {}
+    }
+    return el;
+  };
+})();
+</script>
+
+    <script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
 
       touch-action: manipulation;
 
