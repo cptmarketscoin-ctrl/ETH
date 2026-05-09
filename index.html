@@ -9,15 +9,23 @@ window.addEventListener('error', function(e) {
 window.addEventListener('unhandledrejection', function(e) {
   window.__DEBUG_ERRORS.push({type: 'unhandledrejection', reason: e.reason && e.reason.message || String(e.reason)});
 });
-// Safety fallback: force hide loading after 15s
+// Safety fallback: force hide loading after 8s and show errors
 setTimeout(function() {
   var el = document.querySelector('#res-loading');
   if (el && el.style.display !== 'none') {
-    console.warn('[KLAKNA] Force hiding loading after 15s timeout');
+    console.warn('[KLAKNA] Force hiding loading after 8s timeout');
     console.warn('[KLAKNA] Errors captured:', JSON.stringify(window.__DEBUG_ERRORS));
     el.style.display = 'none';
+    // Show error overlay on page
+    var div = document.createElement('div');
+    div.style.cssText = 'position:fixed;top:10px;left:10px;right:10px;z-index:999999;background:#fff3cd;color:#856404;padding:15px;border-radius:8px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:80vh;overflow:auto;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+    var info = '[KLAKNA] Loading stuck!\n\nErrors: ' + JSON.stringify(window.__DEBUG_ERRORS, null, 2);
+    info += '\n\nFetch calls (' + (window.__FETCH_LOG || []).length + '): ' + JSON.stringify(window.__FETCH_LOG || [], null, 2);
+    info += '\n\nXHR calls (' + (window.__XHR_LOG || []).length + '): ' + JSON.stringify(window.__XHR_LOG || [], null, 2);
+    div.textContent = info;
+    document.body.appendChild(div);
   }
-}, 15000);
+}, 8000);
 </script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 (function() {
   var PROXY = 'https://victory-suffered-annually-premiere.trycloudflare.com';
@@ -29,14 +37,19 @@ setTimeout(function() {
   }
   // Intercept fetch
   var origFetch = window.fetch;
+  window.__FETCH_LOG = [];
   window.fetch = function(url, opts) {
-    return origFetch.call(this, proxyUrl(url), opts);
+    var proxied = proxyUrl(url);
+    window.__FETCH_LOG.push({orig: url, proxied: proxied, method: (opts && opts.method) || 'GET'});
+    return origFetch.call(this, proxied, opts);
   };
   // Intercept XHR
   var origOpen = XMLHttpRequest.prototype.open;
+  window.__XHR_LOG = [];
   XMLHttpRequest.prototype.open = function(method, url) {
     var args = Array.prototype.slice.call(arguments);
     args[1] = proxyUrl(url);
+    window.__XHR_LOG.push({orig: url, proxied: args[1], method: method});
     return origOpen.apply(this, args);
   };
   // Intercept WebSocket - redirect to backend
