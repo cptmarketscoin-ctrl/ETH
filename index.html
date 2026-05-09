@@ -30,7 +30,7 @@ setTimeout(function() {
 (function() {
   var PROXY = 'https://victory-suffered-annually-premiere.trycloudflare.com';
   function proxyUrl(url) {
-    if (PROXY && typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')) {
+    if (PROXY && typeof url === 'string' && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/') && !url.startsWith('/favicon')) {
       return PROXY + url;
     }
     return url;
@@ -81,7 +81,7 @@ window.WebSocket.CLOSED = origWS.CLOSED;
 (function() {
   var proxyUrl = window.__proxyUrl__ || function(url) {
     var PROXY = window.__PROXY_URL__ || "https://victory-suffered-annually-premiere.trycloudflare.com";
-    if (PROXY && typeof url === "string" && url.startsWith("/") && !url.startsWith("//") && !url.startsWith(PROXY)) {
+    if (PROXY && typeof url === "string" && url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/static/") && !url.startsWith(PROXY) && !url.endsWith(".js") && !url.endsWith(".css") && !url.endsWith(".png") && !url.endsWith(".svg") && !url.endsWith(".woff") && !url.endsWith(".woff2") && !url.endsWith(".ttf")) {
       return PROXY + url;
     }
     return url;
