@@ -1,4 +1,4 @@
-<!doctype html><html lang=""><head>
+﻿<!doctype html><html lang=""><head>
   <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script><script>window.__webpack_public_path__ = "/ETH/";</script>
 <script>
 // Debug: capture errors during init
@@ -55,36 +55,48 @@ setTimeout(function() {
   window.WebSocket.OPEN = origWS.OPEN;
   window.WebSocket.CLOSING = origWS.CLOSING;
   window.WebSocket.CLOSED = origWS.CLOSED;
-})();
+  window.__PROXY_URL__ = PROXY;
+  window.__proxyUrl__ = proxyUrl;
+window.WebSocket.CLOSED = origWS.CLOSED;
+}());
 </script>
 
 <script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
 // Fix webpack publicPath for /ETH/ subdirectory
 // Override document.createElement to fix script src paths
+<script>
+// Fix webpack publicPath for /ETH/ subdirectory
+// Override document.createElement to fix script/img src paths
 (function() {
+  var proxyUrl = window.__proxyUrl__ || function(url) {
+    var PROXY = window.__PROXY_URL__ || "https://victory-suffered-annually-premiere.trycloudflare.com";
+    if (PROXY && typeof url === "string" && url.startsWith("/") && !url.startsWith("//") && !url.startsWith(PROXY)) {
+      return PROXY + url;
+    }
+    return url;
+  };
   var origCreate = document.createElement;
   document.createElement = function(tag) {
     var el = origCreate.call(document, tag);
-    if (tag.toLowerCase() === 'script') {
+    var tagName = (tag || "").toLowerCase();
+    if (tagName === "script" || tagName === "img") {
       var setAttribute = el.setAttribute;
       el.setAttribute = function(name, value) {
-        if (name === 'src' && typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
-          value = '/ETH' + value;
+        if ((name === "src" || name === "href") && typeof value === "string") {
+          value = proxyUrl(value);
         }
         return setAttribute.call(this, name, value);
       };
-      // Also intercept direct .src property assignment
       try {
-        var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-        if (srcDesc && srcDesc.set) {
-          Object.defineProperty(el, 'src', {
+        var proto = tagName === "script" ? HTMLScriptElement.prototype : HTMLImageElement.prototype;
+        var desc = Object.getOwnPropertyDescriptor(proto, "src");
+        if (desc && desc.set) {
+          Object.defineProperty(el, "src", {
             set: function(value) {
-              if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
-                value = '/ETH' + value;
-              }
-              return srcDesc.set.call(this, value);
+              value = proxyUrl(value);
+              return desc.set.call(this, value);
             },
-            get: function() { return srcDesc.get.call(this); },
+            get: function() { return desc.get.call(this); },
             configurable: true
           });
         }
@@ -93,373 +105,7 @@ setTimeout(function() {
     return el;
   };
 })();
-</script>
-
-    <script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
-
-      touch-action: manipulation;
-
-    }
-
-    html {
-
-      overscroll-behavior: none;
-
-      touch-action: pan-y;
-
-    }
-
-
-
-    body {
-
-      font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
-
-        Segoe UI, Arial, Roboto, PingFang SC, miui, Hiragino Sans GB,
-
-        Microsoft Yahei, sans-serif !important;
-
-      padding-bottom: constant(safe-area-inset-bottom);
-
-      padding-bottom: env(safe-area-inset-bottom);
-
-    }
-
-    .router-view-loading,
-
-    .global-loading {
-
-      background-color: rgba(0, 0, 0, 0.5);
-
-      z-index: 9999999;
-
-      position: fixed !important;
-
-      display: none;
-
-      width: 100vw;
-
-      height: 100vh;
-
-    }
-
-    .img {
-
-      position: absolute;
-
-      top: 50%;
-
-      left: 50%;
-
-      transform: translate(-50%, -50%);
-
-    }
-
-    #res-loading {
-
-      position: fixed;
-
-      top: 0;
-
-      left: 0;
-
-      z-index: 9999;
-
-      height: 100vh;
-
-      width: 100vw;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      background-color: white;
-
-    }
-
-    .loader {
-
-      position: relative;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      width: 100px;
-
-      height: 100px;
-
-      perspective: 780px;
-
-    }
-
-
-
-    .project-loading-text {
-
-      font-size: 20px;
-
-      font-weight: 700;
-
-      color: #1c1c1c;
-
-      z-index: 10;
-
-    }
-
-
-
-    .load-inner {
-
-      position: absolute;
-
-      width: 100%;
-
-      height: 100%;
-
-      box-sizing: border-box;
-
-      border-radius: 50%;
-
-    }
-
-
-
-    .load-inner.load-one {
-
-      left: 0%;
-
-      top: 0%;
-
-      border-bottom: 3px solid #5c5edc;
-
-      animation: rotate1 1.15s linear infinite;
-
-    }
-
-
-
-    .load-inner.load-two {
-
-      right: 0%;
-
-      top: 0%;
-
-      border-right: 3px solid #9147ff;
-
-      animation: rotate2 1.15s 0.1s linear infinite;
-
-    }
-
-
-
-    .load-inner.load-three {
-
-      right: 0%;
-
-      bottom: 0%;
-
-      border-top: 3px solid #3b82f6;
-
-      animation: rotate3 1.15s 0.15s linear infinite;
-
-    }
-
-
-
-    @keyframes rotate1 {
-
-      0% {
-
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
-
-      }
-
-    }
-
-    @keyframes rotate2 {
-
-      0% {
-
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
-
-      }
-
-    }
-
-    @keyframes rotate3 {
-
-      0% {
-
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
-
-      }
-
-    }
-
-
-
-    .chat-widget-custom-trigger {
-
-      position: fixed;
-
-      right: 20px;
-
-      bottom: 20px;
-
-      width: 60px;
-
-      height: 60px;
-
-      border: none;
-
-      border-radius: 34px 8px 34px 34px;
-
-      background: linear-gradient(135deg, #1f8cff, #1466ff);
-
-      color: #fff;
-
-      z-index: 10001;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      box-shadow: 0 8px 22px rgba(20, 102, 255, 0.28);
-
-      cursor: pointer;
-
-      user-select: none;
-
-      -webkit-user-select: none;
-
-      touch-action: none;
-
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    }
-
-
-
-    .chat-widget-custom-trigger:active {
-
-      transform: scale(0.96);
-
-    }
-
-
-
-    .chat-widget-custom-trigger svg {
-
-      width: 30px;
-
-      height: 30px;
-
-      pointer-events: none;
-
-      fill: currentColor;
-
-    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
-
-      document.documentElement.addEventListener(
-
-        'touchstart',
-
-        function (event) {
-
-          if (event.touches.length > 1) {
-
-            event.preventDefault();
-
-          }
-
-        },
-
-        false,
-
-      );
-
-
-
-      var lastTouchEnd = 0;
-
-      document.documentElement.addEventListener(
-
-        'touchend',
-
-        function (event) {
-
-          var now = Date.now();
-
-          if (now - lastTouchEnd <= 300) {
-
-            event.preventDefault();
-
-          }
-
-          lastTouchEnd = now;
-
-        },
-
-        false,
-
-      );
-
-
-
-      document.addEventListener('gesturestart', function (event) {
-
-        event.preventDefault();
-
-      });
-
-      (function () {
-
-        async function init() {
-
-          const url = new URL(window.location.href);
-
-          const platformr = url.searchParams.get('platformr');
-
-          if (platformr) {
-
-            document.body
-
-              .querySelector('#res-loading')
-
-              .querySelector('.project-loading-text').innerHTML = platformr;
-
-          }
-
-        }
-
-        init();
-
-      })();</script><script>(function (d, t) {
+</script><script>(function (d, t) {
 
         var STORAGE_KEY = 'chat-widget-trigger-position';
 
@@ -479,7 +125,7 @@ setTimeout(function() {
 
           trigger.type = 'button';
 
-          trigger.setAttribute('aria-label', '客服');
+          trigger.setAttribute('aria-label', '瀹㈡湇');
 
           trigger.innerHTML =
 
