@@ -1,120 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <base href="/ETH/">
-  
-  <script>
-    window.__DISABLE_WEB3_AUTOCONNECT = true;
-    window.ethereum = undefined;
-    window.web3 = undefined;
-  </script>
-  
-  <script>
-  // ============ COMPREHENSIVE FIX for API & Static Resource Proxy ============
-  (function() {
-    'use strict';
-    var PROXY = 'https://give-experiences-businesses-publicly.trycloudflare.com';
-    var BASE_PATH = '/ETH';
-
-    function normalizeUrl(url) {
-      if (typeof url !== 'string') return url;
-      url = url.replace(/\/ETH\/ETH\//g, '/ETH/');
-      url = url.replace(/\/static\/ETH\/static\//g, '/ETH/static/');
-      return url;
-    }
-
-    function proxyUrl(url) {
-      if (!PROXY || typeof url !== 'string') return normalizeUrl(url);
-      if (url.indexOf(PROXY) !== -1) return url;
-
-      if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/') && !url.startsWith('/favicon')) {
-        return PROXY + url;
-      }
-
-      if (url.match(/https?:\/\/localhost:3000/)) {
-        var proxied = url.replace(/https?:\/\/localhost:3000/, PROXY);
-        console.log('[PROXY] Redirect localhost:3000 -> ' + proxied);
-        return proxied;
-      }
-
-      if (!url.match(/^https?:\/\//) && !url.startsWith('data:') && !url.startsWith('blob:')) {
-        return PROXY + (url.startsWith('/') ? url : '/' + url);
-      }
-
-      return normalizeUrl(url);
-    }
-
-    // Intercept fetch
-    var origFetch = window.fetch;
-    window.fetch = function(url, opts) {
-      arguments[0] = proxyUrl(url);
-      return origFetch.apply(this, arguments);
-    };
-
-    // Intercept XMLHttpRequest
-    var origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url) {
-      var args = Array.prototype.slice.call(arguments);
-      args[1] = proxyUrl(url);
-      return origOpen.apply(this, args);
-    };
-
-    // Intercept WebSocket
-    var origWS = window.WebSocket;
-    window.WebSocket = function(url, protocols) {
-      if (typeof url === 'string') {
-        if (url.startsWith('wss://cptmarketscoin-ctrl.github.io') ||
-            url.startsWith('ws://cptmarketscoin-ctrl.github.io')) {
-          url = 'wss://give-experiences-businesses-publicly.trycloudflare.com/ws/control';
-        } else {
-          url = proxyUrl(url);
-          if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
-          if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
-        }
-      }
-      return protocols ? new origWS(url, protocols) : new origWS(url);
-    };
-    window.WebSocket.prototype = origWS.prototype;
-    window.WebSocket.CONNECTING = origWS.CONNECTING;
-    window.WebSocket.OPEN = origWS.OPEN;
-    window.WebSocket.CLOSING = origWS.CLOSING;
-    window.WebSocket.CLOSED = origWS.CLOSED;
-
-    console.log('[PROXY] Comprehensive proxy installed, PROXY=' + PROXY);
-  })();
-  </script>
-
-  <script>
-    window.__webpack_public_path__ = "/ETH/static/js/";
-  </script>
-
-  <meta charset="utf-8"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-  <meta name="format-detection" content="telephone=no"/>
-  <title>ETH Exchange - Buy Bitcoin & Crypto</title>
-  <meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend."/>
-  <meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/>
-
-  <link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet">
-  <link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Page</title>
 </head>
 <body>
-  <div id="res-loading">
-    <div class="loader">
-      <div class="load-inner load-one"></div>
-      <div class="load-inner load-two"></div>
-      <div class="load-inner load-three"></div>
-      <span class="project-loading-text">Loading...</span>
-    </div>
-  </div>
-
-  <div id="app"></div>
-
-  <script src="/ETH/static/js/chunk-vendors.1774378911945.js"></script>
-  <script src="/ETH/static/js/app.1774378911945.js"></script>
+  <h1>✅ If you see this, HTML is working!</h1>
+  <p>Backend: https://give-experiences-businesses-publicly.trycloudflare.com</p>
 </body>
 </html>
