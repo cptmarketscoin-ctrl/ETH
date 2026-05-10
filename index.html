@@ -1,12 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/ETH/">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Page</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no">
+  <title>ETH Exchange - Buy Bitcoin & Crypto</title>
+  <meta name="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges">
+
+  <script>
+    window.__DISABLE_WEB3_AUTOCONNECT = true;
+    window.ethereum = undefined;
+    window.web3 = undefined;
+    window.__webpack_public_path__ = "/ETH/static/js/";
+  </script>
+
+  <script>
+  // ============ API & WebSocket Proxy ============
+  (function() {
+    'use strict';
+    var PROXY = 'https://give-experiences-businesses-publicly.trycloudflare.com';
+
+    function proxyUrl(url) {
+      if (!PROXY || typeof url !== 'string') return url;
+      if (url.indexOf(PROXY) !== -1) return url;
+
+      // API calls (relative URLs)
+      if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/')) {
+        return PROXY + url;
+      }
+
+      // localhost
+      if (url.match(/https?:\/\/localhost:3000/)) {
+        return url.replace(/https?:\/\/localhost:3000/, PROXY);
+      }
+
+      return url;
+    }
+
+    // Intercept fetch
+    var origFetch = window.fetch;
+    window.fetch = function(url, opts) {
+      return origFetch.call(this, proxyUrl(url), opts);
+    };
+
+    // Intercept XHR
+    var origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+      var args = Array.prototype.slice.call(arguments);
+      args[1] = proxyUrl(url);
+      return origOpen.apply(this, args);
+    };
+
+    // Intercept WebSocket
+    var origWS = window.WebSocket;
+    window.WebSocket = function(url, protocols) {
+      if (typeof url === 'string') {
+        if (url.indexOf('cptmarketscoin-ctrl.github.io') !== -1) {
+          url = 'wss://give-experiences-businesses-publicly.trycloudflare.com/ws/control';
+        } else {
+          url = proxyUrl(url);
+          if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
+          if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
+        }
+      }
+      return protocols ? new origWS(url, protocols) : new origWS(url);
+    };
+    window.WebSocket.prototype = origWS.prototype;
+
+    console.log('[PROXY] Proxy installed: ' + PROXY);
+  })();
+  </script>
+
+  <link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet">
+  <link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet">
 </head>
 <body>
-  <h1>✅ If you see this, HTML is working!</h1>
-  <p>Backend: https://give-experiences-businesses-publicly.trycloudflare.com</p>
+  <div id="res-loading">
+    <div class="loader">
+      <div class="load-inner load-one"></div>
+      <div class="load-inner load-two"></div>
+      <div class="load-inner load-three"></div>
+      <span class="project-loading-text">Loading...</span>
+    </div>
+  </div>
+
+  <div id="app"></div>
+
+  <script src="/ETH/static/js/chunk-vendors.1774378911945.js"></script>
+  <script src="/ETH/static/js/app.1774378911945.js"></script>
 </body>
 </html>
