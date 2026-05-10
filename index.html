@@ -4,7 +4,7 @@
   // ============ COMPREHENSIVE FIX for API & Static Resource Proxy ============
   (function() {
     'use strict';
-    var PROXY = 'https://give-experiences-businesses-publicly.trycloudflare.com';
+    var PROXY = 'https://nice-numbers-stare.loca.lt';
     var BASE_PATH = '/ETH';
 
     /**
@@ -73,7 +73,7 @@
             url.startsWith('ws://cptmarketscoin-ctrl.github.io')) {
           // 替换域名为后端地址，保持路径 /ws/control
           url = url.replace(/wss?:\/\/cptmarketscoin-ctrl\.github\.io\//,
-                            'wss://give-experiences-businesses-publicly.trycloudflare.com/ws/control');
+                            'wss://nice-numbers-stare.loca.lt/ws/control');
         } else {
           // 其他 WebSocket URL：通过 proxyUrl 处理相对路径
           url = proxyUrl(url);
