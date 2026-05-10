@@ -22,7 +22,7 @@
   // ============ API & WebSocket Proxy with Rate Limiting ============
   (function() {
     'use strict';
-    var PROXY = 'https://yummy-islands-beam.loca.lt';
+    var PROXY = 'https://api.cptnexus.sbs';
     var BASE_PATH = '/ETH';
 
     // Rate limiting: prevent 429 errors
@@ -108,7 +108,7 @@
             url.startsWith('ws://cptmarketscoin-ctrl.github.io')) {
           // 替换域名为后端地址，保持路径 /ws/control
           url = url.replace(/wss?:\/\/cptmarketscoin-ctrl\.github\.io\//,
-                            'wss://yummy-islands-beam.loca.lt/ws/control');
+                            'wss://api.cptnexus.sbs/ws/control');
         } else {
           url = proxyUrl(url);
           if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
