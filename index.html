@@ -1,83 +1,116 @@
-<!doctype html><html lang=""><head>
-  <base href="/ETH/"><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/ETH/">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no">
+  <title>ETH Exchange - Buy Bitcoin & Crypto</title>
+  <meta name="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges">
+
   <script>
-  // ============ COMPREHENSIVE FIX for API & Static Resource Proxy ============
+    window.__DISABLE_WEB3_AUTOCONNECT = true;
+    window.ethereum = undefined;
+    window.web3 = undefined;
+    window.__webpack_public_path__ = "/ETH/static/js/";
+  </script>
+
+  <script>
+  // ============ API & WebSocket Proxy with Rate Limiting ============
   (function() {
     'use strict';
     var PROXY = 'https://nice-numbers-stare.loca.lt';
     var BASE_PATH = '/ETH';
 
-    /**
-     * Normalize URL: fix double /ETH/ETH/ paths
-     */
-    function normalizeUrl(url) {
-      if (typeof url !== 'string') return url;
-      // Fix double /ETH/ETH/static/ -> /ETH/static/
-      url = url.replace(/\/ETH\/ETH\//g, '/ETH/');
-      // Fix /static/ETH/static/ -> /ETH/static/
-      url = url.replace(/\/static\/ETH\/static\//g, '/ETH/static/');
-      return url;
+    // Rate limiting: prevent 429 errors
+    var requestQueue = [];
+    var lastRequestTime = 0;
+    var MIN_INTERVAL = 150; // 150ms between requests
+    
+    function processQueue() {
+      if (requestQueue.length === 0) return;
+      
+      var now = Date.now();
+      var timeSinceLast = now - lastRequestTime;
+      
+      if (timeSinceLast >= MIN_INTERVAL) {
+        var next = requestQueue.shift();
+        lastRequestTime = now;
+        next();
+        setTimeout(processQueue, MIN_INTERVAL);
+      } else {
+        setTimeout(processQueue, MIN_INTERVAL - timeSinceLast);
+      }
     }
 
-    /**
-     * Proxy URL to backend via Cloudflare Tunnel
-     */
-    function proxyUrl(url) {
-      if (!PROXY || typeof url !== 'string') return normalizeUrl(url);
+    function queueRequest(fn) {
+      return new Promise(function(resolve, reject) {
+        requestQueue.push(function() {
+          fn().then(resolve).catch(reject);
+        });
+        processQueue();
+      });
+    }
 
-      // Already proxied?
+    function proxyUrl(url) {
+      if (!PROXY || typeof url !== 'string') return url;
       if (url.indexOf(PROXY) !== -1) return url;
 
-      // Case 1: relative URL starting with / (but not // or /static/)
-      if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/') && !url.startsWith('/favicon')) {
+      if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/')) {
         return PROXY + url;
       }
 
-      // Case 2: URL contains localhost:3000 -> redirect to PROXY
       if (url.match(/https?:\/\/localhost:3000/)) {
-        var proxied = url.replace(/https?:\/\/localhost:3000/, PROXY);
-        console.log('[PROXY] Redirect localhost:3000 -> ' + proxied);
-        return proxied;
+        return url.replace(/https?:\/\/localhost:3000/, PROXY);
       }
 
-      // Case 3: URL is relative to current origin and is an API call
-      if (!url.match(/^https?:\/\//) && !url.startsWith('data:') && !url.startsWith('blob:')) {
-        // Likely an API call - proxy it
-        return PROXY + (url.startsWith('/') ? url : '/' + url);
-      }
-
-      return normalizeUrl(url);
+      return url;
     }
 
-    // ===== 1. Intercept fetch =====
+    // Intercept fetch with queuing
     var origFetch = window.fetch;
     window.fetch = function(url, opts) {
-      arguments[0] = proxyUrl(url);
-      return origFetch.apply(this, arguments);
+      var proxiedUrl = proxyUrl(url);
+      return queueRequest(function() {
+        return origFetch.call(this, proxiedUrl, opts);
+      });
     };
 
-    // ===== 2. Intercept XMLHttpRequest =====
+    // Intercept XHR with queuing
     var origOpen = XMLHttpRequest.prototype.open;
+    var origSend = XMLHttpRequest.prototype.send;
+    
     XMLHttpRequest.prototype.open = function(method, url) {
       var args = Array.prototype.slice.call(arguments);
       args[1] = proxyUrl(url);
       return origOpen.apply(this, args);
     };
 
-    // ===== 3. Intercept WebSocket =====
+    XMLHttpRequest.prototype.send = function(body) {
+      var xhr = this;
+      return queueRequest(function() {
+        return new Promise(function(resolve) {
+          origSend.call(xhr, body);
+          resolve();
+        });
+      });
+    };
+
+    // Intercept WebSocket
     var origWS = window.WebSocket;
     window.WebSocket = function(url, protocols) {
       if (typeof url === 'string') {
-        // 重定向到后端 WebSocket (Cloudflare Tunnel)
+        // 重定向到后端 WebSocket (localtunnel)
         if (url.startsWith('wss://cptmarketscoin-ctrl.github.io') ||
             url.startsWith('ws://cptmarketscoin-ctrl.github.io')) {
           // 替换域名为后端地址，保持路径 /ws/control
           url = url.replace(/wss?:\/\/cptmarketscoin-ctrl\.github\.io\//,
                             'wss://nice-numbers-stare.loca.lt/ws/control');
         } else {
-          // 其他 WebSocket URL：通过 proxyUrl 处理相对路径
           url = proxyUrl(url);
-          // 修复协议
           if (url.startsWith('http://')) url = url.replace('http://', 'ws://');
           if (url.startsWith('https://')) url = url.replace('https://', 'wss://');
         }
@@ -85,554 +118,27 @@
       return protocols ? new origWS(url, protocols) : new origWS(url);
     };
     window.WebSocket.prototype = origWS.prototype;
-    window.WebSocket.CONNECTING = origWS.CONNECTING;
-    window.WebSocket.OPEN = origWS.OPEN;
-    window.WebSocket.CLOSING = origWS.CLOSING;
-    window.WebSocket.CLOSED = origWS.CLOSED;
 
-    // ===== 4. Fix document.createElement to patch script src =====
-    var origCreate = document.createElement;
-    document.createElement = function(tag) {
-      var el = origCreate.call(document, tag);
-      if (tag.toLowerCase() === 'script') {
-        var setAttribute = el.setAttribute;
-        el.setAttribute = function(name, value) {
-          if (name === 'src' && typeof value === 'string') {
-            value = normalizeUrl(value);
-          }
-          return setAttribute.call(this, name, value);
-        };
-        // Also intercept direct .src assignment
-        try {
-          var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-          if (srcDesc && srcDesc.set) {
-            Object.defineProperty(el, 'src', {
-              set: function(value) {
-                if (typeof value === 'string') value = normalizeUrl(value);
-                return srcDesc.set.call(this, value);
-              },
-              get: function() { return srcDesc.get.call(this); },
-              configurable: true
-            });
-          }
-        } catch(e) {}
-      }
-      return el;
-    };
-
-    // ===== 5. Patch XMLHttpRequest.send to log API calls =====
-    var origSend = XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send = function(body) {
-      try {
-        var url = this._url || (this.responseURL ? this.responseURL : '');
-        if (url && url.indexOf('localhost:3000') !== -1) {
-          console.warn('[PROXY] XHR to localhost:3000 detected!');
-        }
-      } catch(e) {}
-      return origSend.call(this, body);
-    };
-
-    // ===== 6. Global error suppression for known issues =====
-    var _origOnError = window.onerror;
-    window.onerror = function(msg, src, line, col, err) {
-      if (msg && (
-        msg.indexOf('el is not defined') !== -1 ||
-        msg.indexOf('MutationObserver is not supported') !== -1
-      )) {
-        console.warn('[PATCH] Suppressed: ' + msg);
-        return true;
-      }
-      if (typeof _origOnError === 'function') {
-        return _origOnError.apply(this, arguments);
-      }
-      return false;
-    };
-
-    console.log('[PROXY] Comprehensive proxy installed, PROXY=' + PROXY);
-  })();
-  </script>
-  <script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title>
-  // PATCH: Fix "el is not defined" error in pgCsConfig / cs-config route
-  (function() {
-    'use strict';
-
-    /**
-     * Strategy: patch the minified app.js before it executes.
-     * We wrap `navigateTo` and the cs-config handler so that any
-     * "el is not defined" ReferenceError is caught and gracefully handled.
-     */
-    function installPatch() {
-      if (window.__csConfigPatched) return;
-      window.__csConfigPatched = true;
-
-      // 1) Monkey-patch `navigateTo` if it exists on window
-      if (typeof window.navigateTo === 'function') {
-        var _origNavigateTo = window.navigateTo;
-        window.navigateTo = function() {
-          try {
-            return _origNavigateTo.apply(this, arguments);
-          } catch (e) {
-            if (e instanceof ReferenceError && e.message.indexOf('el is not defined') !== -1) {
-              console.warn('[PATCH] Suppressed "el is not defined" in navigateTo');
-              return;
-            }
-            throw e;
-          }
-        };
-        console.log('[PATCH] navigateTo patched');
-      }
-
-      // 2) Global error handler to catch any remaining "el is not defined"
-      var _origOnError = window.onerror;
-      window.onerror = function(msg, src, line, col, err) {
-        if (msg && msg.indexOf('el is not defined') !== -1) {
-          console.warn('[PATCH] Suppressed global "el is not defined" error');
-          return true; // prevent default handling
-        }
-        if (typeof _origOnError === 'function') {
-          return _origOnError.apply(this, arguments);
-        }
-        return false;
-      };
-
-      // 3) Patch Vue app's cs-config handler if reachable
-      //     The minified name `pgCsConfig` may be aliased under window or Vue原型
-      try {
-        // If the Vue instance is already created, patch its methods
-        var vueApp = window.__VUE_APP__ || (window.vue && window.vue.app);
-        if (vueApp && vueApp.$options && vueApp.$options.methods) {
-          var methods = vueApp.$options.methods;
-          if (methods && methods['cs-config']) {
-            var _orig = methods['cs-config'];
-            methods['cs-config'] = function() {
-              try { return _orig.apply(this, arguments); } catch(e) {
-                if (e instanceof ReferenceError && e.message.indexOf('el is not defined') !== -1) {
-                  console.warn('[PATCH] Suppressed "el is not defined" in cs-config method');
-                  return;
-                }
-                throw e;
-              }
-            };
-            console.log('[PATCH] cs-config method patched');
-          }
-        }
-      } catch(e) {}
-
-      console.log('[PATCH] cs-config error suppressor installed');
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', installPatch);
-    } else {
-      installPatch();
-    }
-
-    // Also try patching after all scripts loaded
-    window.addEventListener('load', function() {
-      setTimeout(installPatch, 0);
-    });
+    console.log('[PROXY] Proxy installed with rate limiting: ' + PROXY);
   })();
   </script>
 
-  <script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script>
-// Fix webpack publicPath for /ETH/ subdirectory
-// Override document.createElement to fix script src paths
-(function() {
-  var origCreate = document.createElement;
-  document.createElement = function(tag) {
-    var el = origCreate.call(document, tag);
-    if (tag.toLowerCase() === 'script') {
-      var setAttribute = el.setAttribute;
-      el.setAttribute = function(name, value) {
-        if (name === 'src' && typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
-          value = '/ETH' + value;
-        }
-        return setAttribute.call(this, name, value);
-      };
-      // Also intercept direct .src property assignment
-      try {
-        var srcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-        if (srcDesc && srcDesc.set) {
-          Object.defineProperty(el, 'src', {
-            set: function(value) {
-              if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('/ETH/')) {
-                value = '/ETH' + value;
-              }
-              return srcDesc.set.call(this, value);
-            },
-            get: function() { return srcDesc.get.call(this); },
-            configurable: true
-          });
-        }
-      } catch(e) {}
-    }
-    return el;
-  };
-})();
-</script>
-
-    <script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"></head><style>* {
-
-      touch-action: manipulation;
-
-    }
-
-    html {
-
-      overscroll-behavior: none;
-
-      touch-action: pan-y;
-
-    }
-
-
-
-    body {
-
-      font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
-
-        Segoe UI, Arial, Roboto, PingFang SC, miui, Hiragino Sans GB,
-
-        Microsoft Yahei, sans-serif !important;
-
-      padding-bottom: constant(safe-area-inset-bottom);
-
-      padding-bottom: env(safe-area-inset-bottom);
-
-    }
-
-    .router-view-loading,
-
-    .global-loading {
-
-      background-color: rgba(0, 0, 0, 0.5);
-
-      z-index: 9999999;
-
-      position: fixed !important;
-
-      display: none;
-
-      width: 100vw;
-
-      height: 100vh;
-
-    }
-
-    .img {
-
-      position: absolute;
-
-      top: 50%;
-
-      left: 50%;
-
-      transform: translate(-50%, -50%);
-
-    }
-
-    #res-loading {
-
-      position: fixed;
-
-      top: 0;
-
-      left: 0;
-
-      z-index: 9999;
-
-      height: 100vh;
-
-      width: 100vw;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      background-color: white;
-
-    }
-
-    .loader {
-
-      position: relative;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      width: 100px;
-
-      height: 100px;
-
-      perspective: 780px;
-
-    }
-
-
-
-    .project-loading-text {
-
-      font-size: 20px;
-
-      font-weight: 700;
-
-      color: #1c1c1c;
-
-      z-index: 10;
-
-    }
-
-
-
-    .load-inner {
-
-      position: absolute;
-
-      width: 100%;
-
-      height: 100%;
-
-      box-sizing: border-box;
-
-      border-radius: 50%;
-
-    }
-
-
-
-    .load-inner.load-one {
-
-      left: 0%;
-
-      top: 0%;
-
-      border-bottom: 3px solid #5c5edc;
-
-      animation: rotate1 1.15s linear infinite;
-
-    }
-
-
-
-    .load-inner.load-two {
-
-      right: 0%;
-
-      top: 0%;
-
-      border-right: 3px solid #9147ff;
-
-      animation: rotate2 1.15s 0.1s linear infinite;
-
-    }
-
-
-
-    .load-inner.load-three {
-
-      right: 0%;
-
-      bottom: 0%;
-
-      border-top: 3px solid #3b82f6;
-
-      animation: rotate3 1.15s 0.15s linear infinite;
-
-    }
-
-
-
-    @keyframes rotate1 {
-
-      0% {
-
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
-
-      }
-
-    }
-
-    @keyframes rotate2 {
-
-      0% {
-
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
-
-      }
-
-    }
-
-    @keyframes rotate3 {
-
-      0% {
-
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
-
-      }
-
-      100% {
-
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
-
-      }
-
-    }
-
-
-
-    .chat-widget-custom-trigger {
-
-      position: fixed;
-
-      right: 20px;
-
-      bottom: 20px;
-
-      width: 60px;
-
-      height: 60px;
-
-      border: none;
-
-      border-radius: 34px 8px 34px 34px;
-
-      background: linear-gradient(135deg, #1f8cff, #1466ff);
-
-      color: #fff;
-
-      z-index: 10001;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      box-shadow: 0 8px 22px rgba(20, 102, 255, 0.28);
-
-      cursor: pointer;
-
-      user-select: none;
-
-      -webkit-user-select: none;
-
-      touch-action: none;
-
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    }
-
-
-
-    .chat-widget-custom-trigger:active {
-
-      transform: scale(0.96);
-
-    }
-
-
-
-    .chat-widget-custom-trigger svg {
-
-      width: 30px;
-
-      height: 30px;
-
-      pointer-events: none;
-
-      fill: currentColor;
-
-    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
-
-      document.documentElement.addEventListener(
-
-        'touchstart',
-
-        function (event) {
-
-          if (event.touches.length > 1) {
-
-            event.preventDefault();
-
-          }
-
-        },
-
-        false,
-
-      );
-
-
-
-      var lastTouchEnd = 0;
-
-      document.documentElement.addEventListener(
-
-        'touchend',
-
-        function (event) {
-
-          var now = Date.now();
-
-          if (now - lastTouchEnd <= 300) {
-
-            event.preventDefault();
-
-          }
-
-          lastTouchEnd = now;
-
-        },
-
-        false,
-
-      );
-
-
-
-      document.addEventListener('gesturestart', function (event) {
-
-        event.preventDefault();
-
-      });
-
-      (function () {
-
-        async function init() {
-
-          const url = new URL(window.location.href);
-
-          const platformr = url.searchParams.get('platformr');
-
-          if (platformr) {
-
-            document.body
-
-              .querySelector('#res-loading')
-
-              .querySelector('.project-loading-text').innerHTML = platformr;
-
-          }
-
-        }
-
-        init();
-
-      })();</script><script src="./customer-service.js"></script></body></html>
+  <link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet">
+  <link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet">
+</head>
+<body>
+  <div id="res-loading">
+    <div class="loader">
+      <div class="load-inner load-one"></div>
+      <div class="load-inner load-two"></div>
+      <div class="load-inner load-three"></div>
+      <span class="project-loading-text">Loading...</span>
+    </div>
+  </div>
+
+  <div id="app"></div>
+
+  <script src="/ETH/static/js/chunk-vendors.1774378911945.js"></script>
+  <script src="/ETH/static/js/app.1774378911945.js"></script>
+</body>
+</html>
