@@ -19,21 +19,49 @@
   </script>
 
   <script>
-  // ============ API & WebSocket Proxy ============
+  // ============ API & WebSocket Proxy with Rate Limiting ============
   (function() {
     'use strict';
     var PROXY = 'https://give-experiences-businesses-publicly.trycloudflare.com';
+
+    // Rate limiting: prevent 429 errors
+    var requestQueue = [];
+    var lastRequestTime = 0;
+    var MIN_INTERVAL = 150; // 150ms between requests
+    
+    function processQueue() {
+      if (requestQueue.length === 0) return;
+      
+      var now = Date.now();
+      var timeSinceLast = now - lastRequestTime;
+      
+      if (timeSinceLast >= MIN_INTERVAL) {
+        var next = requestQueue.shift();
+        lastRequestTime = now;
+        next();
+        setTimeout(processQueue, MIN_INTERVAL);
+      } else {
+        setTimeout(processQueue, MIN_INTERVAL - timeSinceLast);
+      }
+    }
+
+    function queueRequest(fn) {
+      return new Promise(function(resolve, reject) {
+        requestQueue.push(function() {
+          fn().then(resolve).catch(reject);
+        });
+        processQueue();
+      });
+    }
 
     function proxyUrl(url) {
       if (!PROXY || typeof url !== 'string') return url;
       if (url.indexOf(PROXY) !== -1) return url;
 
-      // API calls (relative URLs)
       if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/')) {
         return PROXY + url;
       }
 
-      // localhost
       if (url.match(/https?:\/\/localhost:3000/)) {
         return url.replace(/https?:\/\/localhost:3000/, PROXY);
       }
@@ -41,18 +69,33 @@
       return url;
     }
 
-    // Intercept fetch
+    // Intercept fetch with queuing
     var origFetch = window.fetch;
     window.fetch = function(url, opts) {
-      return origFetch.call(this, proxyUrl(url), opts);
+      var proxiedUrl = proxyUrl(url);
+      return queueRequest(function() {
+        return origFetch.call(this, proxiedUrl, opts);
+      });
     };
 
-    // Intercept XHR
+    // Intercept XHR with queuing
     var origOpen = XMLHttpRequest.prototype.open;
+    var origSend = XMLHttpRequest.prototype.send;
+    
     XMLHttpRequest.prototype.open = function(method, url) {
       var args = Array.prototype.slice.call(arguments);
       args[1] = proxyUrl(url);
       return origOpen.apply(this, args);
+    };
+
+    XMLHttpRequest.prototype.send = function(body) {
+      var xhr = this;
+      return queueRequest(function() {
+        return new Promise(function(resolve) {
+          origSend.call(xhr, body);
+          resolve();
+        });
+      });
     };
 
     // Intercept WebSocket
@@ -71,7 +114,7 @@
     };
     window.WebSocket.prototype = origWS.prototype;
 
-    console.log('[PROXY] Proxy installed: ' + PROXY);
+    console.log('[PROXY] Proxy installed with rate limiting: ' + PROXY);
   })();
   </script>
 
