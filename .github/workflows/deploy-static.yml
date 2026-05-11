@@ -27,9 +27,15 @@ jobs:
       - name: Prepare deploy directory
         run: |
           mkdir -p _deploy
-          cp -r ETH _deploy/ETH
-          cp -r static _deploy/static
+          # Copy ETH contents (app pages/chunks/css)
+          cp -r ETH/* _deploy/
+          # Copy chunk files from root static/ to _deploy/static/
+          mkdir -p _deploy/static
+          cp -r static/* _deploy/static/
+          # Copy favicon
           cp favicon.ico _deploy/ 2>/dev/null || true
+          echo "=== Deploy structure ==="
+          find _deploy -maxdepth 2 -type d | head -20
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
