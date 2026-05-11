@@ -1,6 +1,7 @@
-// Service Worker - 网络层代理
+// Service Worker - 网络层代理 v1.1
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
+var CACHE_VERSION = 'v1.1';  // 版本号，修改后强制更新
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...');
@@ -13,8 +14,24 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('[SW] 激活中...');
-  return self.clients.claim();
+  console.log('[SW] 激活中...', CACHE_VERSION);
+  
+  // 清除旧版本缓存，强制更新
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheName !== CACHE_VERSION) {
+            console.log('[SW] 删除旧缓存:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(function() {
+      console.log('[SW] 已激活新版本', CACHE_VERSION);
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener('fetch', function(event) {
