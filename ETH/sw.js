@@ -23,6 +23,12 @@ self.addEventListener('fetch', function(event) {
   // 跳过代理服务器本身的请求
   if (url.indexOf(API_PROXY) !== -1) return;
   
+  // ❗ 跳过 Hash URL（客户端路由）
+  if (url.indexOf('#') !== -1) {
+    console.log('[SW] 跳过 Hash URL:', url);
+    return;
+  }
+  
   var urlPath = url.replace(/^https?:\/\/[^/]+/, '');
   var shouldProxy = false;
   var newUrl = url;
