@@ -24,13 +24,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare deploy directory
+        run: |
+          mkdir -p _deploy
+          cp -r ETH _deploy/ETH
+          cp -r static _deploy/static
+          cp favicon.ico _deploy/ 2>/dev/null || true
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./ETH"
+          path: "./_deploy"
 
       - name: Deploy to GitHub Pages
         id: deployment
