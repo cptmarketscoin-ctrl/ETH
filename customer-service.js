@@ -1,73 +1,7 @@
-<!doctype html><html lang=""><head><script>window.__DISABLE_WEB3_AUTOCONNECT = true; window.ethereum = undefined; window.web3 = undefined;</script><script>window.__webpack_public_path__ = "/ETH/static/js/";</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title>CPT</title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title>CPT</title><script>
-// API Proxy - forward all API requests to backend
-var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
-
-// Intercept fetch requests
-(function() {
-  var origFetch = window.fetch;
-  window.fetch = function(url, opts) {
-    if (typeof url === 'string' && KLAKNA_API_PROXY) {
-      // Rewrite localhost:3000 to backend
-      if (url.indexOf('localhost:3000') !== -1) {
-        url = url.replace(/https?:\/\/localhost:3000/, KLAKNA_API_PROXY);
-      }
-      // Rewrite /exchange/ relative paths (no leading /)
-      else if (url.indexOf('/exchange/') === -1 && url.indexOf('exchange/') === 0) {
-        url = KLAKNA_API_PROXY + '/' + url;
-      }
-      // Rewrite paths starting with /
-      else if (url.startsWith('/')) {
-        // Skip static assets (JS/CSS/images/fonts)
-        if (!/^\/(ETH\/)?static\//.test(url) && !/\.(js|css|png|jpg|gif|svg|woff|ttf|ico)(\?|$)/.test(url)) {
-          url = KLAKNA_API_PROXY + url;
-        }
-      }
-    }
-    return origFetch.call(this, url, opts);
-  };
-
-  // Intercept XMLHttpRequest
-  var origOpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function(method, url) {
-    if (typeof url === 'string' && KLAKNA_API_PROXY) {
-      if (url.indexOf('localhost:3000') !== -1) {
-        url = url.replace(/https?:\/\/localhost:3000/, KLAKNA_API_PROXY);
-      }
-      else if (url.indexOf('/exchange/') === -1 && url.indexOf('exchange/') === 0) {
-        url = KLAKNA_API_PROXY + '/' + url;
-      }
-      else if (url.startsWith('/')) {
-        if (!/^\/(ETH\/)?static\//.test(url) && !/\.(js|css|png|jpg|gif|svg|woff|ttf|ico)(\?|$)/.test(url)) {
-          url = KLAKNA_API_PROXY + url;
-        }
-      }
-    }
-    return origOpen.call(this, method, url);
-  };
-})();
-</script>
-<script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"><script>
-(function replaceBrandName(){
-  var FROM='Klakna',TO='CPT';
-  document.title=document.title.replace(new RegExp(FROM,'gi'),TO);
-  function walkNode(n){
-    if(n.nodeType===3){if(n.nodeValue&&n.nodeValue.indexOf(FROM)!==-1)n.nodeValue=n.nodeValue.replace(new RegExp(FROM,'g'),TO);}
-    else if(n.nodeType===1){['title','alt','placeholder','aria-label'].forEach(function(a){var v=n.getAttribute(a);if(v&&v.indexOf(FROM)!==-1)n.setAttribute(a,v.replace(new RegExp(FROM,'g'),TO));});n.childNodes.forEach(walkNode);}
-  }
-  function scan(){walkNode(document.body||document.documentElement);}
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',scan);}else{scan();}
-  var ob=new MutationObserver(function(ms){
-    if(document.title.indexOf(FROM)!==-1)document.title=document.title.replace(new RegExp(FROM,'g'),TO);
-    ms.forEach(function(m){m.addedNodes.forEach(walkNode);if(m.type==='characterData'&&m.target.nodeValue&&m.target.nodeValue.indexOf(FROM)!==-1)m.target.nodeValue=m.target.nodeValue.replace(new RegExp(FROM,'g'),TO);});
-  });
-  ob.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
-})();
-</script>
-<script>
 /**
  * KLAKNA 客服系统 - 前端界面组件
  * 替代第三方客服组件，使用自己的后端API
- * UI设计与原有第三方组件完全一�?
+ * UI设计与原有第三方组件完全一致
  */
 
 (function() {
@@ -75,23 +9,23 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
 
   // ========== 配置 ==========
   const CONFIG = {
-    apiBase: 'https://api.cptnexus.sbs',  // 空字符串表示同源，如果API在不同域需要设�?
+    apiBase: '',  // 空字符串表示同源，如果API在不同域需要设置
     pollInterval: 5000,  // 轮询间隔（毫秒）
-    maxRetries: 3,  // 最大重试次�?
+    maxRetries: 3,  // 最大重试次数
   };
 
   // ========== 全局变量 ==========
   let csConfig = null;  // 客服配置
   let isOpen = false;  // 聊天窗口是否打开
-  let pollTimer = null;  // 轮询定时�?
+  let pollTimer = null;  // 轮询定时器
   let isDragging = false;  // 是否正在拖拽
   let dragoffsetX = 0;  // 拖拽偏移X
   let drag0ffsetY = 0;  // 拖拽偏移Y
   let lastPollTime = null;  // 上次轮询时间
 
-  // ========== 初始�? ==========
+  // ========== 初始化 ==========
   function init() {
-    console.log('[KLAKNA CS] 初始化客服系�?...');
+    console.log('[KLAKNA CS] 初始化客服系统...');
 
     // 获取客服配置
     fetchConfig().then(() => {
@@ -99,14 +33,14 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
       createChatWindow();
       startPolling();
     }).catch(err => {
-      console.error('[KLAKNA CS] 初始化失�?:', err);
+      console.error('[KLAKNA CS] 初始化失败:', err);
     });
   }
 
   // ========== 获取客服配置 ==========
   async function fetchConfig() {
     try {
-      const res = await fetch(CONFIG.apiBase + '/api/cs/config');
+      const res = await fetch('/api/cs/config');
       const data = await res.json();
       if (data.code === 200) {
         csConfig = data.data;
@@ -441,7 +375,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
     console.log('[KLAKNA CS] 聊天窗口', isOpen ? '打开' : '关闭');
   }
 
-  // ========== 发送消�? ==========
+  // ========== 发送消息 ==========
   window.KlaknaCS = window.KlaknaCS || {};
   window.KlaknaCS.toggle = toggleChat;
 
@@ -456,9 +390,9 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
     appendMessage('user', message);
     input.value = '';
 
-    // 发送到服务�?
+    // 发送到服务器
     try {
-      const res = await fetch(CONFIG.apiBase + '/api/cs/send', {
+      const res = await fetch('/api/cs/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -469,19 +403,19 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
 
       const data = await res.json();
       if (data.code !== 200) {
-        console.error('[KLAKNA CS] 发送失�?:', data.msg);
-        appendMessage('system', '发送失�?: ' + data.msg);
+        console.error('[KLAKNA CS] 发送失败:', data.msg);
+        appendMessage('system', '发送失败: ' + data.msg);
       }
     } catch (e) {
-      console.error('[KLAKNA CS] 发送失�?:', e);
-      appendMessage('system', '发送失败，请检查网�?');
+      console.error('[KLAKNA CS] 发送失败:', e);
+      appendMessage('system', '发送失败，请检查网络');
     }
   };
 
   // ========== 加载消息历史 ==========
   async function loadMessages() {
     try {
-      const res = await fetch(CONFIG.apiBase + '/api/cs/messages', {
+      const res = await fetch('/api/cs/messages', {
         headers: {
           'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
         }
@@ -492,7 +426,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
         const messagesDiv = document.getElementById('klakna-cs-messages');
         if (!messagesDiv) return;
 
-        // 清空现有消息（保留欢迎语�?
+        // 清空现有消息（保留欢迎语）
         messagesDiv.innerHTML = `
           <div class="klakna-cs-welcome">
             ${csConfig?.welcome_message || 'Hello, how can I help you?'}
@@ -507,7 +441,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
           }
         });
 
-        // 滚动到底�?
+        // 滚动到底部
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       }
     } catch (e) {
@@ -515,7 +449,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
     }
   }
 
-  // ========== 追加消息到界�? ==========
+  // ========== 追加消息到界面 ==========
   function appendMessage(type, text, time) {
     const messagesDiv = document.getElementById('klakna-cs-messages');
     if (!messagesDiv) return;
@@ -541,7 +475,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
     return div.innerHTML;
   }
 
-  // ========== 开始轮�? ==========
+  // ========== 开始轮询 ==========
   function startPolling() {
     if (pollTimer) clearInterval(pollTimer);
 
@@ -549,7 +483,7 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
       if (!isOpen) return;  // 只有窗口打开时才轮询
 
       try {
-        const res = await fetch(CONFIG.apiBase + '/api/cs/messages', {
+        const res = await fetch('/api/cs/messages', {
           headers: {
             'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
           }
@@ -557,13 +491,13 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
 
         const data = await res.json();
         if (data.code === 200 && data.data.list) {
-          // 检查是否有新回�?
+          // 检查是否有新回复
           const hasNewReply = data.data.list.some(msg =>
             msg.reply && msg.status === 'replied'
           );
 
           if (hasNewReply) {
-            loadMessages();  // 重新加载所有消�?
+            loadMessages();  // 重新加载所有消息
           }
         }
       } catch (e) {
@@ -623,11 +557,11 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
       const deltaX = clientX - startX;
       const deltaY = clientY - startY;
 
-      // 计算新位�?
+      // 计算新位置
       let newRight = initialRight - deltaX;
       let newBottom = initialBottom - deltaY;
 
-      // 边界检�?
+      // 边界检查
       const maxRight = window.innerWidth - el.offsetWidth;
       const maxBottom = window.innerHeight - el.offsetHeight;
       newRight = Math.max(0, Math.min(newRight, maxRight));
@@ -672,162 +606,3 @@ var KLAKNA_API_PROXY = 'https://api.cptnexus.sbs';
   console.log('[KLAKNA CS] 客服系统加载完成');
 
 })();
-
-</script>
-</head><style>* {
-      touch-action: manipulation;
-    }
-    html {
-      overscroll-behavior: none;
-      touch-action: pan-y;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
-        Segoe UI, Arial, Roboto, PingFang SC, miui, Hiragino Sans GB,
-        Microsoft Yahei, sans-serif !important;
-      padding-bottom: constant(safe-area-inset-bottom);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .router-view-loading,
-    .global-loading {
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 9999999;
-      position: fixed !important;
-      display: none;
-      width: 100vw;
-      height: 100vh;
-    }
-    .img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    #res-loading {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 9999;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: white;
-    }
-    .loader {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100px;
-      height: 100px;
-      perspective: 780px;
-    }
-
-    .project-loading-text {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1c1c1c;
-      z-index: 10;
-    }
-
-    .load-inner {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      border-radius: 50%;
-    }
-
-    .load-inner.load-one {
-      left: 0%;
-      top: 0%;
-      border-bottom: 3px solid #5c5edc;
-      animation: rotate1 1.15s linear infinite;
-    }
-
-    .load-inner.load-two {
-      right: 0%;
-      top: 0%;
-      border-right: 3px solid #9147ff;
-      animation: rotate2 1.15s 0.1s linear infinite;
-    }
-
-    .load-inner.load-three {
-      right: 0%;
-      bottom: 0%;
-      border-top: 3px solid #3b82f6;
-      animation: rotate3 1.15s 0.15s linear infinite;
-    }
-
-    @keyframes rotate1 {
-      0% {
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(0deg);
-      }
-      100% {
-        transform: rotateX(45deg) rotateY(-45deg) rotateZ(360deg);
-      }
-    }
-    @keyframes rotate2 {
-      0% {
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg);
-      }
-      100% {
-        transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg);
-      }
-    }
-    @keyframes rotate3 {
-      0% {
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(0deg);
-      }
-      100% {
-        transform: rotateX(-60deg) rotateY(0deg) rotateZ(360deg);
-      }
-    }
-
-    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="/ETH/static/img/viewLoading.gif" class="img" onerror="this.style.display='none'"/></div><div class="global-loading"><img data-v-06134f56="" src="/ETH/static/img/viewLoading.gif" class="img" onerror="this.style.display='none'"/></div><div id="app"></div><script>// 禁止ios放大
-      document.documentElement.addEventListener(
-        'touchstart',
-        function (event) {
-          if (event.touches.length > 1) {
-            event.preventDefault();
-          }
-        },
-        false,
-      );
-
-      var lastTouchEnd = 0;
-      document.documentElement.addEventListener(
-        'touchend',
-        function (event) {
-          var now = Date.now();
-          if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
-          }
-          lastTouchEnd = now;
-        },
-        false,
-      );
-
-      document.addEventListener('gesturestart', function (event) {
-        event.preventDefault();
-      });
-      (function () {
-        async function init() {
-          const url = new URL(window.location.href);
-          const platformr = url.searchParams.get('platformr');
-          if (platformr) {
-            document.body
-              .querySelector('#res-loading')
-              .querySelector('.project-loading-text').innerHTML = platformr;
-          }
-        }
-        init();
-        // Safety timeout: hide loading overlay after 8s max
-        setTimeout(function() {
-          var el = document.getElementById('res-loading');
-          if (el) el.style.display = 'none';
-        }, 8000);
-      })();</script></body></html>
