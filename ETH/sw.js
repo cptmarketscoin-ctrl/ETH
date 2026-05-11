@@ -4,7 +4,12 @@ var BASE_PATH = '/ETH';
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...');
-  event.skipWaiting();
+  // 使用 self.skipWaiting() 而不是直接调用 event.skipWaiting()
+  if (event && typeof event.skipWaiting === 'function') {
+    event.skipWaiting();
+  } else {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', function(event) {
