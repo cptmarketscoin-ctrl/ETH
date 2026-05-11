@@ -40,7 +40,7 @@ self.addEventListener('fetch', function(event) {
   // 跳过代理服务器本身的请求
   if (url.indexOf(API_PROXY) !== -1) return;
   
-  // ❗ 跳过 Hash URL（客户端路由）
+  // 跳过 Hash URL（客户端路由）
   if (url.indexOf('#') !== -1) {
     console.log('[SW] 跳过 Hash URL:', url);
     return;
@@ -50,7 +50,7 @@ self.addEventListener('fetch', function(event) {
   var shouldProxy = false;
   var newUrl = url;
   
-  // 检查是否是静态资源
+  // ❗ 只代理 /api/ 请求，静态资源不代理
   function isStatic(urlStr) {
     return urlStr.indexOf('/static/') !== -1 ||
            urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm)(\?|$)/);
@@ -58,19 +58,32 @@ self.addEventListener('fetch', function(event) {
   
   // GitHub Pages 域名的请求
   if (url.indexOf('cptmarketscoin-ctrl.github.io') !== -1) {
+    // 静态资源不代理，直接从 GitHub Pages 加载
     if (isStatic(urlPath)) {
-      return; // 静态资源不代理
+      console.log('[SW] 静态资源不代理:', url);
+      return;
     }
-    newUrl = API_PROXY + urlPath;
-    shouldProxy = true;
-    console.log('[SW] 代理:', url, '->', newUrl);
+    
+    // 只代理 /api/ 路径
+    if (urlPath.indexOf('/api/') === 0 || urlPath === '/api/config' || urlPath.indexOf('/api?') === 0) {
+      newUrl = API_PROXY + urlPath;
+      shouldProxy = true;
+      console.log('[SW] 代理 API:', url, '->', newUrl);
+    } else {
+      // 其他请求不代理
+      return;
+    }
   }
   
-  // 相对路径
+  // 相对路径：只代理 /api/ 开头
   if (!url.match(/^https?:\/\//) && !isStatic(url)) {
-    newUrl = API_PROXY + BASE_PATH + '/' + url.replace(/^\//, '');
-    shouldProxy = true;
-    console.log('[SW] 代理相对路径:', url, '->', newUrl);
+    if (url.indexOf('/api/') === 0 || url === '/api/config') {
+      newUrl = API_PROXY + BASE_PATH + '/' + url.replace(/^\//, '');
+      shouldProxy = true;
+      console.log('[SW] 代理相对路径 API:', url, '->', newUrl);
+    } else {
+      return;
+    }
   }
   
   if (shouldProxy) {
