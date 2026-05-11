@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="format-detection" content="telephone=no">
-  <title>ETH Exchange - Buy Bitcoin & Crypto</title>
+  <title>ETH Exchange - Buy Bitcoin &amp; Crypto</title>
   <meta name="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges">
 
   <script>
@@ -16,10 +16,22 @@
     window.ethereum = undefined;
     window.web3 = undefined;
     window.__webpack_public_path__ = "/ETH/static/js/";
+
+    // 补丁：防止 getWebInfo 崩溃（原站 footer 元素在 GitHub Pages 不存在）
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建可能缺失的 footer 链接元素
+      if (!document.getElementById('webInfoLink')) {
+        var link = document.createElement('a');
+        link.id = 'webInfoLink';
+        link.href = '#';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+      }
+    });
   </script>
 
   <script>
-  // ============ API & WebSocket Proxy with Rate Limiting ============
+  // ============ API &amp; WebSocket Proxy with Rate Limiting ============
   (function() {
     'use strict';
     var PROXY = 'https://api.cptnexus.sbs';
@@ -59,12 +71,19 @@
       if (!PROXY || typeof url !== 'string') return url;
       if (url.indexOf(PROXY) !== -1) return url;
 
+      // 相对路径: /exchange/... → PROXY/exchange/...
       if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/static/')) {
         return PROXY + url;
       }
 
-      if (url.match(/https?:\/\/localhost:3000/)) {
-        return url.replace(/https?:\/\/localhost:3000/, PROXY);
+      // localhost 任意端口
+      if (url.match(/https?:\/\/localhost(:\d+)?/)) {
+        return url.replace(/https?:\/\/localhost(:\d+)?/, PROXY);
+      }
+
+      // 原站域名
+      if (url.match(/https?:\/\/www\.klakna\.sbs/)) {
+        return url.replace(/https?:\/\/www\.klakna\.sbs/, PROXY);
       }
 
       return url;
