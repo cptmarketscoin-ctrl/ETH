@@ -96,7 +96,8 @@
         cursor: pointer;
         user-select: none;
         -webkit-user-select: none;
-        touch-action: none;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
