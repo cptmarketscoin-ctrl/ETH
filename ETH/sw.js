@@ -1,7 +1,7 @@
 // Service Worker - 网络层代理 v1.1
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.1';  // 版本号，修改后强制更新
+var CACHE_VERSION = 'v1.3';  // v1.3: fix - don't proxy external CDN domains
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...');
@@ -50,41 +50,31 @@ self.addEventListener('fetch', function(event) {
   var shouldProxy = false;
   var newUrl = url;
   
-  // ❗ 只代理 /api/ 请求，静态资源不代理
+  // 代理所有非静态请求（/api/, /exchange/, /uc/, /swap/ 等全部转发到后端）
   function isStatic(urlStr) {
     return urlStr.indexOf('/static/') !== -1 ||
-           urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm)(\?|$)/);
+           urlStr.indexOf('/ETH/') !== -1 ||
+           urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt)(\?|$)/) ||
+           urlStr.indexOf('.js?') !== -1 || urlStr.indexOf('.css?') !== -1;
   }
   
-  // GitHub Pages 域名的请求
-  if (url.indexOf('cptmarketscoin-ctrl.github.io') !== -1) {
-    // 静态资源不代理，直接从 GitHub Pages 加载
-    if (isStatic(urlPath)) {
-      console.log('[SW] 静态资源不代理:', url);
-      return;
-    }
-    
-    // 只代理 /api/ 路径
-    if (urlPath.indexOf('/api/') === 0 || urlPath === '/api/config' || urlPath.indexOf('/api?') === 0) {
-      newUrl = API_PROXY + urlPath;
-      shouldProxy = true;
-      console.log('[SW] 代理 API:', url, '->', newUrl);
-    } else {
-      // 其他请求不代理
-      return;
-    }
+  // 静态资源不代理
+  if (isStatic(urlPath)) {
+    console.log('[SW] 静态资源不代理:', url);
+    return;
   }
   
-  // 相对路径：只代理 /api/ 开头
-  if (!url.match(/^https?:\/\//) && !isStatic(url)) {
-    if (url.indexOf('/api/') === 0 || url === '/api/config') {
-      newUrl = API_PROXY + BASE_PATH + '/' + url.replace(/^\//, '');
-      shouldProxy = true;
-      console.log('[SW] 代理相对路径 API:', url, '->', newUrl);
-    } else {
-      return;
-    }
+  // 排除外部 CDN 域名 - 只代理 GitHub Pages 域名的请求
+  var isRelative = !url.match(/^https?:\/\//);
+  var isOurDomain = url.indexOf('cptmarketscoin-ctrl.github.io') !== -1;
+  if (!isRelative && !isOurDomain) {
+    return; // 外部域名（fonts.googleapis.com, youtube.com 等）直接放行
   }
+  
+  // 全量代理到后端
+  newUrl = API_PROXY + urlPath;
+  shouldProxy = true;
+  console.log('[SW] 代理:', url, '->', newUrl);
   
   if (shouldProxy) {
     event.respondWith(

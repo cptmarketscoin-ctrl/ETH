@@ -1,30 +1,9 @@
-<!doctype html><html lang=""><head><script>// CPT 品牌文字替换：将 DOM 中所有 Klakna 替换为 CPT
-(function(){
-  window.fileId = window.fileId || 9007393;
-  var FROM='Klakna', TO='CPT';
-  function replaceText(n){
-    if(n.nodeType===3){
-      if(n.textContent.indexOf(FROM)!==-1) n.textContent=n.textContent.split(FROM).join(TO);
-    }else if(n.nodeType===1){
-      if(n.tagName==='SCRIPT'||n.tagName==='STYLE') return;
-      var p=n.getAttribute('placeholder');
-      if(p&&p.indexOf(FROM)!==-1) n.setAttribute('placeholder',p.split(FROM).join(TO));
-      var t=n.getAttribute('title');
-      if(t&&t.indexOf(FROM)!==-1) n.setAttribute('title',t.split(FROM).join(TO));
-      for(var i=0;i<n.childNodes.length;i++) replaceText(n.childNodes[i]);
-    }
-  }
-  function tryReplace(){
-    var app=document.getElementById('app');
-    if(app){replaceText(app);console.log('[CPT] Brand replace done');
-      if(window.MutationObserver){
-        new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)replaceText(n);});});}).observe(app,{childList:true,subtree:true});
-      }
-    }else setTimeout(tryReplace,100);
-  }
-  setTimeout(tryReplace,500);
-})();
-</script><script>// 简化的代理脚本 - 只代理 API 请求
+<!doctype html><html lang=""><head><script>// CPT品牌替换+fileId修复
+(function(){window.fileId=window.fileId||9007393;var FROM='Klakna',TO='CPT';
+function r(n){if(n.nodeType===3){if(n.textContent.indexOf(FROM)!==-1)n.textContent=n.textContent.split(FROM).join(TO)}else if(n.nodeType===1){if(n.tagName==='SCRIPT'||n.tagName==='STYLE')return;var p=n.getAttribute('placeholder');if(p&&p.indexOf(FROM)!==-1)n.setAttribute('placeholder',p.split(FROM).join(TO));var t=n.getAttribute('title');if(t&&t.indexOf(FROM)!==-1)n.setAttribute('title',t.split(FROM).join(TO));for(var i=0;i<n.childNodes.length;i++)r(n.childNodes[i])}}
+function tr(){var a=document.getElementById('app');if(a){r(a);console.log('[CPT] Brand replaced');if(window.MutationObserver){new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(x){if(x.nodeType===1)r(x)})})}).observe(a,{childList:true,subtree:true})}}else setTimeout(tr,100)}
+setTimeout(tr,500)})();
+</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 (function(){
   var KLAKNA_API_PROXY = "https://api.cptnexus.sbs";
   var BASE_PATH = "/ETH";
@@ -44,21 +23,16 @@
     if (url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2)(\?|$)/)) return url;
     if (url.indexOf('/static/') !== -1) return url;
     
-    // 只代理包含 /api/ 的请求
-    var isApiRequest = false;
+    // 代理所有非静态资源的相对路径请求（/exchange/, /api/, /uc/, /swap/ 等）
     if (url.match(/^https?:\/\//)) {
-      // 完整 URL
-      if (url.indexOf('/api/') !== -1 || url.match(/\/api[\/\?]/)) {
-        isApiRequest = true;
-      }
+      // 完整 URL：只代理包含后端路径的
+      if (!url.match(/\/(api|exchange|uc|swap|otc|market|margin|futures)\//)) return url;
     } else {
-      // 相对路径
-      if (url.indexOf('/api/') === 0 || url === '/api/config') {
-        isApiRequest = true;
-      }
+      // 相对路径：跳过本地静态资源，其他全部代理
+      if (url.indexOf('/ETH/') === 0) return url;
+      if (url.indexOf('/static/') === 0) return url;
+      if (!url.startsWith('/')) return url;
     }
-    
-    if (!isApiRequest) return url;
     
     // 执行代理
     var newUrl;
@@ -66,7 +40,7 @@
       var urlPath = url.replace(/^https?:\/\/[^/]+/, '');
       newUrl = KLAKNA_API_PROXY + urlPath;
     } else {
-      newUrl = KLAKNA_API_PROXY + BASE_PATH + '/' + url.replace(/^\//, '');
+      newUrl = KLAKNA_API_PROXY + '/' + url.replace(/^\//, '');
     }
     
     console.log("[PROXY] API:", url, "->", newUrl);
@@ -107,9 +81,31 @@
     return _open.apply(this, arguments);
   };
   
+  // 拦截 WebSocket - 将 wss://cptmarketscoin-ctrl.github.io/... 代理到后端
+  var OrigWebSocket = window.WebSocket;
+  window.WebSocket = function(url, protocols) {
+    if (url && typeof url === 'string') {
+      var wsUrl = url;
+      // ws:// 或 wss:// 完整 URL
+      if (wsUrl.match(/^wss?:\/\//) && wsUrl.indexOf('cptmarketscoin-ctrl.github.io') !== -1) {
+        var wsPath = wsUrl.replace(/^wss?:\/\/[^/]+/, '');
+        wsUrl = 'wss://' + KLAKNA_API_PROXY.replace(/^https?:\/\//, '') + wsPath;
+        console.log("[PROXY] WS:", url, "->", wsUrl);
+      }
+      // 相对路径
+      else if (!wsUrl.match(/^wss?:\/\//) && wsUrl.startsWith('/')) {
+        wsUrl = 'wss://' + KLAKNA_API_PROXY.replace(/^https?:\/\//, '') + wsUrl;
+        console.log("[PROXY] WS:", url, "->", wsUrl);
+      }
+      return new OrigWebSocket(wsUrl, protocols);
+    }
+    return new OrigWebSocket(url, protocols);
+  };
+  window.WebSocket.prototype = OrigWebSocket.prototype;
+  
   console.log("[PROXY] SIMPLE version installed successfully");
 })();
-</script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"><script>
+</script><script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"><script>
 // 注册 Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -265,7 +261,7 @@ if ('serviceWorker' in navigator) {
       height: 30px;
       pointer-events: none;
       fill: currentColor;
-    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="./static/img/viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="./static/img/viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
+    }</style><body><div id="res-loading"><div class="loader"><div class="load-inner load-one"></div><div class="load-inner load-two"></div><div class="load-inner load-three"></div><span class="project-loading-text">Loading...</span></div></div><div class="router-view-loading"><img data-v-06134f56="" src="/ETH/static/img/viewLoading.gif" class="img"/></div><div class="global-loading"><img data-v-06134f56="" src="/ETH/static/img/viewLoading.gif" class="img"/></div><div id="app"></div><script>// 禁止ios放大
       document.documentElement.addEventListener(
         'touchstart',
         function (event) {
