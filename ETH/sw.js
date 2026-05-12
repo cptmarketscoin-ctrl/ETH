@@ -1,7 +1,7 @@
 // Service Worker - 网络层代理 v1.1
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.2';  // 版本号，修改后强制更新（修复：代理所有后端路由）
+var CACHE_VERSION = 'v1.3';  // v1.3: fix - don't proxy external CDN domains
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...');
@@ -62,6 +62,13 @@ self.addEventListener('fetch', function(event) {
   if (isStatic(urlPath)) {
     console.log('[SW] 静态资源不代理:', url);
     return;
+  }
+  
+  // 排除外部 CDN 域名 - 只代理 GitHub Pages 域名的请求
+  var isRelative = !url.match(/^https?:\/\//);
+  var isOurDomain = url.indexOf('cptmarketscoin-ctrl.github.io') !== -1;
+  if (!isRelative && !isOurDomain) {
+    return; // 外部域名（fonts.googleapis.com, youtube.com 等）直接放行
   }
   
   // 全量代理到后端
