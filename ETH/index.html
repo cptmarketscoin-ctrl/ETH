@@ -18,21 +18,16 @@
     if (url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2)(\?|$)/)) return url;
     if (url.indexOf('/static/') !== -1) return url;
     
-    // 只代理包含 /api/ 的请求
-    var isApiRequest = false;
+    // 代理所有非静态资源的相对路径请求（/exchange/, /api/, /uc/, /swap/ 等）
     if (url.match(/^https?:\/\//)) {
-      // 完整 URL
-      if (url.indexOf('/api/') !== -1 || url.match(/\/api[\/\?]/)) {
-        isApiRequest = true;
-      }
+      // 完整 URL：只代理包含后端路径的
+      if (!url.match(/\/(api|exchange|uc|swap|otc|market|margin|futures)\//)) return url;
     } else {
-      // 相对路径
-      if (url.indexOf('/api/') === 0 || url === '/api/config') {
-        isApiRequest = true;
-      }
+      // 相对路径：跳过本地静态资源，其他全部代理
+      if (url.indexOf('/ETH/') === 0) return url;
+      if (url.indexOf('/static/') === 0) return url;
+      if (!url.startsWith('/')) return url;
     }
-    
-    if (!isApiRequest) return url;
     
     // 执行代理
     var newUrl;
