@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配置管理 - CPT Markets 管理后台</title>
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; }
+    
+    /* 布局 */
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #001529; color: white; padding: 20px 0; }
+    .sidebar h2 { padding: 0 20px 20px; border-bottom: 1px solid #ffffff20; margin-bottom: 20px; font-size: 18px; }
+    .sidebar ul { list-style: none; }
+    .sidebar li { padding: 12px 20px; cursor: pointer; transition: background 0.3s; }
+    .sidebar li:hover { background: #1890ff30; }
+    .sidebar li.active { background: #1890ff; }
+    .main { flex:1; padding: 20px; }
+    .header { background: white; padding: 16px 24px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header h1 { font-size: 20px; color: #333; }
+    
+    /* 卡片 */
+    .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; }
+    
+    /* 按钮 */
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .btn-primary { background: #1890ff; color: white; }
+    .btn-primary:hover { background: #40a9ff; }
+    .btn-success { background: #52c41a; color: white; }
+    .btn-success:hover { background: #73d13d; }
+    .btn-danger { background: #ff4d4f; color: white; }
+    .btn-danger:hover { background: #ff7875; }
+    .btn-default { background: white; color: #333; border: 1px solid #d9d9d9; }
+    .btn-default:hover { border-color: #1890ff; color: #1890ff; }
+    
+    /* 表格 */
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #fafafa; padding: 12px; text-align: left; border-bottom: 1px solid #e8e8e8; font-weight: 600; color: #333; }
+    .table td { padding: 12px; border-bottom: 1px solid #e8e8e8; color: #666; }
+    .table tr:hover td { background: #fafafa; }
+    
+    /* 表单 */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #1890ff; box-shadow: 0 0 0 2px #1890ff20; }
+    
+    /* 标签 */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #e6f7ff; color: #1890ff; }
+    .badge.boolean { background: #f6ffed; color: #52c41a; }
+    .badge.number { background: #fff7e6; color: #fa8c16; }
+    
+    /* 模态框 */
+    .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+    .modal.active { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: white; border-radius: 8px; padding: 24px; width: 500px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h3 { font-size: 18px; color: #333; }
+    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; }
+    .modal-footer { margin-top: 20px; text-align: right; }
+    .modal-footer .btn { margin-left: 8px; }
+    
+    /* 类别筛选 */
+    .category-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .category-tab { padding: 8px 16px; border: 1px solid #d9d9d9; border-radius: 4px; cursor: pointer; background: white; transition: all 0.3s; }
+    .category-tab:hover { border-color: #1890ff; color: #1890ff; }
+    .category-tab.active { background: #1890ff; color: white; border-color: #1890ff; }
+    
+    /* 搜索栏 */
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .search-box { display: flex; gap: 8px; }
+    .search-box input { width: 300px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+      <h2>⚙️ 管理后台</h2>
+      <ul>
+        <li onclick="location.href='admin-dashboard.html'">📊 仪表盘</li>
+        <li onclick="location.href='admin-users.html'">👥 用户管理</li>
+        <li onclick="location.href='admin-orders.html'">📋 订单管理</li>
+        <li onclick="location.href='admin-positions.html'">📈 持仓管理</li>
+        <li class="active">⚙️ 配置管理</li>
+        <li onclick="location.href='admin-coins.html'">💰 币种管理</li>
+        <li onclick="location.href='admin-market.html'">📊 行情管理</li>
+        <li onclick="location.href='admin-inject.html'">💉 注入管理</li>
+        <li onclick="location.href='admin-restrict.html'">🚫 限制管理</li>
+        <li onclick="location.href='admin-command.html'">📢 指令推送</li>
+        <li onclick="location.href='admin-logs.html'">📝 操作日志</li>
+        <li onclick="location.href='admin-sql.html'">🗄️ SQL 执行</li>
+        <li onclick="location.href='admin-config.html'">⚙️ 系统配置</li>
+        <li onclick="location.href='admin-danger.html'">⚠️ 危险操作</li>
+      </ul>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main">
+      <div class="header">
+        <h1>⚙️ 配置管理</h1>
+      </div>
+      
+      <!-- 工具栏 -->
+      <div class="card">
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索配置..." oninput="filterConfigs()">
+          </div>
+          <button class="btn btn-primary" onclick="showAddModal()">+ 添加配置</button>
+        </div>
+        
+        <!-- 类别筛选 -->
+        <div class="category-tabs" id="categoryTabs">
+          <div class="category-tab active" onclick="filterByCategory('all')">全部</div>
+        </div>
+      </div>
+      
+      <!-- 配置列表 -->
+      <div class="card">
+        <h3>配置列表 (<span id="totalCount">0</span> 条)</h3>
+        <table class="table" id="configTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>类别</th>
+              <th>键名</th>
+              <th>值</th>
+              <th>类型</th>
+              <th>标签</th>
+              <th>更新时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="configBody">
+            <!-- 动态加载 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 添加/编辑模态框 -->
+  <div class="modal" id="configModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">添加配置</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="configForm" onsubmit="saveConfig(event)">
+        <input type="hidden" id="configId">
+        
+        <div class="form-group">
+          <label>类别 *</label>
+          <input type="text" id="configCategory" required placeholder="例如：general">
+        </div>
+        
+        <div class="form-group">
+          <label>键名 *</label>
+          <input type="text" id="configKey" required placeholder="例如：site_name">
+        </div>
+        
+        <div class="form-group">
+          <label>值 *</label>
+          <input type="text" id="configValue" required placeholder="例如：CPT Markets">
+        </div>
+        
+        <div class="form-group">
+          <label>标签</label>
+          <input type="text" id="configLabel" placeholder="例如：网站名称">
+        </div>
+        
+        <div class="form-group">
+          <label>值类型</label>
+          <select id="configValueType">
+            <option value="text">text</option>
+            <option value="boolean">boolean</option>
+            <option value="number">number</option>
+            <option value="json">json</option>
+          </select>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" onclick="closeModal()">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // API 配置
+    const API_BASE = localStorage.getItem('API_BASE') || 'http://localhost:8080';
+    const AUTH_HEADER = 'Bearer admin:klakna_admin_root_2024';
+    
+    let allConfigs = [];
+    let currentCategory = 'all';
+    
+    // 加载所有配置
+    async function loadConfigs() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/config-settings/list`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': AUTH_HEADER
+          },
+          body: JSON.stringify({ category: 'all' })
+        });
+        const data = await res.json();
+        
+        if (data.code === 200 && data.data && data.data.list) {
+          allConfigs = data.data.list;
+          renderConfigs(allConfigs);
+          renderCategoryTabs(allConfigs);
+        } else {
+          alert('加载配置失败：' + (data.msg || '未知错误'));
+        }
+      } catch(e) {
+        alert('请求失败：' + e.message);
+      }
+    }
+    
+    // 渲染配置列表
+    function renderConfigs(configs) {
+      const tbody = document.getElementById('configBody');
+      tbody.innerHTML = '';
+      
+      configs.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td><span class="badge">${c.category}</span></td>
+          <td><code>${c.key}</code></td>
+          <td><code>${c.value || ''}</code></td>
+          <td><span class="badge ${c.value_type}">${c.value_type}</span></td>
+          <td>${c.label || ''}</td>
+          <td>${c.updated_at || ''}</td>
+          <td>
+            <button class="btn btn-primary" style="padding:4px 8px;font-size:12px;" onclick="editConfig(${c.id})">编辑</button>
+            <button class="btn btn-danger" style="padding:4px 8px;font-size:12px;" onclick="deleteConfig(${c.id}, '${c.category}/${c.key}')">删除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById('totalCount').textContent = configs.length;
+    }
+    
+    // 渲染类别标签页
+    function renderCategoryTabs(configs) {
+      const tabsDiv = document.getElementById('categoryTabs');
+      const categories = [...new Set(configs.map(c => c.category))].sort();
+      
+      let html = '<div class="category-tab ' + (currentCategory === 'all' ? 'active' : '') + '" onclick="filterByCategory(\'all\')">全部</div>';
+      categories.forEach(cat => {
+        const count = configs.filter(c => c.category === cat).length;
+        html += '<div class="category-tab ' + (currentCategory === cat ? 'active' : '') + '" onclick="filterByCategory(\'' + cat + '\')">' + cat + ' (' + count + ')</div>';
+      });
+      
+      tabsDiv.innerHTML = html;
+    }
+    
+    // 按类别筛选
+    function filterByCategory(category) {
+      currentCategory = category;
+      
+      // 更新标签页样式
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // 筛选配置
+      if (category === 'all') {
+        renderConfigs(allConfigs);
+      } else {
+        const filtered = allConfigs.filter(c => c.category === category);
+        renderConfigs(filtered);
+      }
+    }
+    
+    // 搜索配置
+    function filterConfigs() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (!keyword) {
+        filterByCategory(currentCategory);
+        return;
+      }
+      
+      const filtered = allConfigs.filter(c => {
+        return c.category.toLowerCase().includes(keyword) ||
+               c.key.toLowerCase().includes(keyword) ||
+               (c.value && c.value.toLowerCase().includes(keyword)) ||
+               (c.label && c.label.toLowerCase().includes(keyword));
+      });
+      
+      renderConfigs(filtered);
+    }
+    
+    // 显示添加模态框
+    function showAddModal() {
+      document.getElementById('modalTitle').textContent = '添加配置';
+      document.getElementById('configId').value = '';
+      document.getElementById('configCategory').value = '';
+      document.getElementById('configKey').value = '';
+      document.getElementById('configValue').value = '';
+      document.getElementById('configLabel').value = '';
+      document.getElementById('configValueType').value = 'text';
+      document.getElementById('configModal').classList.add('active');
+    }
+    
+    // 编辑配置
+    async function editConfig(id) {
+      const config = allConfigs.find(c => c.id === id);
+      if (!config) return;
+      
+      document.getElementById('modalTitle').textContent = '编辑配置';
+      document.getElementById('configId').value = config.id;
+      document.getElementById('configCategory').value = config.category;
+      document.getElementById('configKey').value = config.key;
+      document.getElementById('configValue').value = config.value || '';
+      document.getElementById('configLabel').value = config.label || '';
+      document.getElementById('configValueType').value = config.value_type || 'text';
+      document.getElementById('configModal').classList.add('active');
+    }
+    
+    // 关闭模态框
+    function closeModal() {
+      document.getElementById('configModal').classList.remove('active');
+    }
+    
+    // 保存配置
+    async function saveConfig(event) {
+      event.preventDefault();
+      
+      const id = document.getElementById('configId').value;
+      const category = document.getElementById('configCategory').value.trim();
+      const key = document.getElementById('configKey').value.trim();
+      const value = document.getElementById('configValue').value.trim();
+      const label = document.getElementById('configLabel').value.trim();
+      const valueType = document.getElementById('configValueType').value;
+      
+      if (!category || !key || !value) {
+        alert('请填写必填项（类别、键名、值）');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin/config-settings/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': AUTH_HEADER
+          },
+          body: JSON.stringify({ category, key, value, label, value_type: valueType })
+        });
+        const data = await res.json();
+        
+        if (data.code === 200) {
+          alert('保存成功！');
+          closeModal();
+          loadConfigs();
+        } else {
+          alert('保存失败：' + (data.msg || '未知错误'));
+        }
+      } catch(e) {
+        alert('请求失败：' + e.message);
+      }
+    }
+    
+    // 删除配置
+    async function deleteConfig(id, name) {
+      if (!confirm('确定要删除配置 "' + name + '" 吗？')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin/config-settings/delete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': AUTH_HEADER
+          },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        
+        if (data.code === 200) {
+          alert('删除成功！');
+          loadConfigs();
+        } else {
+          alert('删除失败：' + (data.msg || '未知错误'));
+        }
+      } catch(e) {
+        alert('请求失败：' + e.message);
+      }
+    }
+    
+    // 页面加载时执行
+    loadConfigs();
+  </script>
+</body>
+</html>
