@@ -1,4 +1,30 @@
-<!doctype html><html lang=""><head><script>// 简化的代理脚本 - 只代理 API 请求
+<!doctype html><html lang=""><head><script>// CPT 品牌文字替换：将 DOM 中所有 Klakna 替换为 CPT
+(function(){
+  window.fileId = window.fileId || 9007393;
+  var FROM='Klakna', TO='CPT';
+  function replaceText(n){
+    if(n.nodeType===3){
+      if(n.textContent.indexOf(FROM)!==-1) n.textContent=n.textContent.split(FROM).join(TO);
+    }else if(n.nodeType===1){
+      if(n.tagName==='SCRIPT'||n.tagName==='STYLE') return;
+      var p=n.getAttribute('placeholder');
+      if(p&&p.indexOf(FROM)!==-1) n.setAttribute('placeholder',p.split(FROM).join(TO));
+      var t=n.getAttribute('title');
+      if(t&&t.indexOf(FROM)!==-1) n.setAttribute('title',t.split(FROM).join(TO));
+      for(var i=0;i<n.childNodes.length;i++) replaceText(n.childNodes[i]);
+    }
+  }
+  function tryReplace(){
+    var app=document.getElementById('app');
+    if(app){replaceText(app);console.log('[CPT] Brand replace done');
+      if(window.MutationObserver){
+        new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)replaceText(n);});});}).observe(app,{childList:true,subtree:true});
+      }
+    }else setTimeout(tryReplace,100);
+  }
+  setTimeout(tryReplace,500);
+})();
+</script><script>// 简化的代理脚本 - 只代理 API 请求
 (function(){
   var KLAKNA_API_PROXY = "https://api.cptnexus.sbs";
   var BASE_PATH = "/ETH";
