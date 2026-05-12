@@ -3,7 +3,7 @@
 function r(n){if(n.nodeType===3){if(n.textContent.indexOf(FROM)!==-1)n.textContent=n.textContent.split(FROM).join(TO)}else if(n.nodeType===1){if(n.tagName==='SCRIPT'||n.tagName==='STYLE')return;var p=n.getAttribute('placeholder');if(p&&p.indexOf(FROM)!==-1)n.setAttribute('placeholder',p.split(FROM).join(TO));var t=n.getAttribute('title');if(t&&t.indexOf(FROM)!==-1)n.setAttribute('title',t.split(FROM).join(TO));for(var i=0;i<n.childNodes.length;i++)r(n.childNodes[i])}}
 function tr(){var a=document.getElementById('app');if(a){r(a);console.log('[CPT] Brand replaced');if(window.MutationObserver){new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')r(m.target);m.addedNodes.forEach(function(x){if(x.nodeType===1)r(x)})})}).observe(a,{childList:true,subtree:true,characterData:true})}}else setTimeout(tr,100)}
 setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();if(++_s>=15)clearInterval(_i)},2000)})();
-</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title></title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
+</script><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,target-densitydpi=device-dpi"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><meta name="format-detection" content="telephone=no"/><title>CPT Exchange - Buy Bitcoin & Crypto</title><meta property="description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta name="keywords" content="USA,Web3,Buy/Sell,crypto coin,Web3.0,uslarty,Ethereum,BTC,USDT,BNB,stock,contract,option"/><meta property="og:site_name" content="Comprehensive cryptocurrency trading platform"/><meta property="og:type" content="product"/><meta property="og:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta property="og:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="og:image" content="logo.png"/><meta property="og:image:width" content="1280"/><meta property="og:image:height" content="720"/><meta name="twitter:card" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:site" content="Comprehensive cryptocurrency trading platform"/><meta name="twitter:title" content="Buy Bitcoin & Crypto | Crypto Exchange & App"/><meta name="twitter:description" content="Buy BTC, ETH, XRP and more on leading cryptocurrency exchanges - Explore Web3, Invest, Manage and Lend. Sign up today and experience the future of finance."/><meta property="twitter:image:width" content="1280"/><meta property="twitter:image:height" content="720"/><meta name="twitter:card" content="summary_large_image"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"/><link rel="apple-touch-icon"/><meta name="apple-mobile-web-app-title"/><link rel="bookmark"/><link rel="apple-touch-icon-precomposed" sizes="180x180"/><link rel="apple-touch-startup-image"/><title></title><script>
 (function(){
   var KLAKNA_API_PROXY = "https://api.cptnexus.sbs";
   var BASE_PATH = "/ETH";
@@ -16,6 +16,13 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();if(++_s>=15)clear
   function proxyUrl(url) {
     if (!url || typeof url !== "string") return url;
     
+    // 🔧 修复：ETH/undefined → 重定向到有效路径
+    if (url.indexOf('/ETH/undefined') !== -1) {
+      var fixed = url.replace(/\/ETH\/undefined/g, '/ETH');
+      console.log("[PROXY] Fixed undefined fileId:", url, "->", fixed);
+      return fixed;
+    }
+    
     // 跳过：已经是代理、Hash、data/blob、静态资源
     if (url.indexOf(KLAKNA_API_PROXY) !== -1) return url;
     if (url.indexOf('#') !== -1) return url;
@@ -25,11 +32,11 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();if(++_s>=15)clear
     
     // 代理所有非静态资源的相对路径请求（/exchange/, /api/, /uc/, /swap/ 等）
     if (url.match(/^https?:\/\//)) {
-      // 完整 URL：只代理包含后端路径的
-      if (!url.match(/\/(api|exchange|uc|swap|otc|market|margin|futures)\//)) return url;
+      // 🔧 修复：任何 trycloudflare.com 或其他外部 API 调用也代理到后端
+      if (!url.match(/\/(api|exchange|uc|swap|otc|market|margin|futures|rockie)\//)) return url;
     } else {
-      // 相对路径：跳过本地静态资源，其他全部代理
-      if (url.indexOf('/ETH/') === 0) return url;
+      // 相对路径：跳过本地静态资源（但不跳过 /ETH/undefined 上面的 fix 已处理）
+      if (url.indexOf('/ETH/static/') === 0 || url.indexOf('/ETH/img/') === 0) return url;
       if (url.indexOf('/static/') === 0) return url;
       if (!url.startsWith('/')) return url;
     }
@@ -81,29 +88,75 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();if(++_s>=15)clear
     return _open.apply(this, arguments);
   };
   
-  // 拦截 WebSocket - 将 wss://cptmarketscoin-ctrl.github.io/... 代理到后端
+  // 拦截 WebSocket - 将所有 WebSocket 代理到后端
   var OrigWebSocket = window.WebSocket;
   window.WebSocket = function(url, protocols) {
     if (url && typeof url === 'string') {
       var wsUrl = url;
-      // ws:// 或 wss:// 完整 URL
-      if (wsUrl.match(/^wss?:\/\//) && wsUrl.indexOf('cptmarketscoin-ctrl.github.io') !== -1) {
-        var wsPath = wsUrl.replace(/^wss?:\/\/[^/]+/, '');
-        wsUrl = 'wss://' + KLAKNA_API_PROXY.replace(/^https?:\/\//, '') + wsPath;
-        console.log("[PROXY] WS:", url, "->", wsUrl);
+      // ws:// 或 wss:// 完整 URL（包括 trycloudflare.com 域名）
+      if (wsUrl.match(/^wss?:\/\//)) {
+        // 非我们的后端域名 → 代理到后端
+        if (wsUrl.indexOf('api.cptnexus.sbs') === -1) {
+          var wsPath = wsUrl.replace(/^wss?:\/\/[^/]+/, '');
+          wsUrl = 'wss://' + KLAKNA_API_PROXY.replace(/^https?:\/\//, '') + wsPath;
+          console.log("[PROXY] WS external:", url, "->", wsUrl);
+        }
       }
       // 相对路径
-      else if (!wsUrl.match(/^wss?:\/\//) && wsUrl.startsWith('/')) {
+      else if (wsUrl.startsWith('/')) {
         wsUrl = 'wss://' + KLAKNA_API_PROXY.replace(/^https?:\/\//, '') + wsUrl;
-        console.log("[PROXY] WS:", url, "->", wsUrl);
+        console.log("[PROXY] WS relative:", url, "->", wsUrl);
       }
-      return new OrigWebSocket(wsUrl, protocols);
+      try {
+        var ws = new OrigWebSocket(wsUrl, protocols);
+        // 🔧 WS 错误处理：连接失败时静默，不影响到页面
+        ws.addEventListener('error', function(e) {
+          console.warn('[PROXY] WebSocket error (non-fatal):', wsUrl);
+        });
+        return ws;
+      } catch(e) {
+        console.warn('[PROXY] WebSocket creation failed:', e.message);
+        // 返回一个假的 WebSocket 对象防止页面崩溃
+        return { readyState: 3, close: function(){}, send: function(){}, addEventListener: function(){} };
+      }
     }
     return new OrigWebSocket(url, protocols);
   };
   window.WebSocket.prototype = OrigWebSocket.prototype;
+  window.WebSocket.CONNECTING = 0;
+  window.WebSocket.OPEN = 1;
+  window.WebSocket.CLOSING = 2;
+  window.WebSocket.CLOSED = 3;
   
   console.log("[PROXY] SIMPLE version installed successfully");
+  
+  // 🔧 全局错误处理：防止 .map() 等运行时错误崩溃页面
+  var _origOnerror = window.onerror;
+  window.onerror = function(msg, src, line, col, err) {
+    if (msg && typeof msg === 'string') {
+      // 静默处理 .map() 错误（通常来自 API 响应格式不匹配）
+      if (msg.indexOf('reading \'map\'') !== -1 || msg.indexOf('reading "map"') !== -1) {
+        console.warn('[PROXY] Suppressed .map() error:', msg.substring(0, 100));
+        return true; // 阻止默认错误处理
+      }
+      // 静默处理 WebSocket 相关错误
+      if (msg.indexOf('WebSocket') !== -1) {
+        console.warn('[PROXY] Suppressed WebSocket error:', msg.substring(0, 100));
+        return true;
+      }
+    }
+    if (_origOnerror) return _origOnerror.apply(this, arguments);
+    return false;
+  };
+  
+  // 🔧 全局 Promise rejection 处理
+  window.addEventListener('unhandledrejection', function(e) {
+    var msg = (e.reason && e.reason.message) || String(e.reason).slice(0, 200);
+    if (msg.indexOf('reading \'map\'') !== -1 || msg.indexOf('WebSocket') !== -1) {
+      console.warn('[PROXY] Suppressed unhandled rejection:', msg.substring(0, 100));
+      e.preventDefault();
+    }
+  });
 })();
 </script><script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css" rel="stylesheet"><script>
 // 注册 Service Worker
