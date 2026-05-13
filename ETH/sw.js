@@ -2,7 +2,7 @@
 // 与 index.html 内联代理逻辑保持一致
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.5';  // v1.5: CPT品牌修复+图标+K线数据
+var CACHE_VERSION = 'v1.6-20260513';
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
