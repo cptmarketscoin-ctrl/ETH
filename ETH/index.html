@@ -1,6 +1,4 @@
-<!doctype html><html lang=""><head><script>// 强制注销旧SW确保最新版本生效
-if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();console.log('[CPT] Old SW unregistered')})})}
-// CPT品牌替换+fileId修复
+<!doctype html><html lang=""><head><script>// CPT品牌替换+fileId修复
 (function(){window.fileId=window.fileId||9007393;var FROM='Klakna',TO='CPT';
 function r(n){if(n.nodeType===3){if(n.textContent.indexOf(FROM)!==-1)n.textContent=n.textContent.split(FROM).join(TO)}else if(n.nodeType===1){if(n.tagName==='SCRIPT'||n.tagName==='STYLE')return;var p=n.getAttribute('placeholder');if(p&&p.indexOf(FROM)!==-1)n.setAttribute('placeholder',p.split(FROM).join(TO));var t=n.getAttribute('title');if(t&&t.indexOf(FROM)!==-1)n.setAttribute('title',t.split(FROM).join(TO));for(var i=0;i<n.childNodes.length;i++)r(n.childNodes[i])}}
 function fixTitle(){if(document.title.indexOf(FROM)!==-1)document.title=document.title.split(FROM).join(TO)}

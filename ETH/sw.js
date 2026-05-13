@@ -2,7 +2,7 @@
 // 所有请求统一代理到后端，由后端 express.static 提供静态文件
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v2.0';
+var CACHE_VERSION = 'v2.1';
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
