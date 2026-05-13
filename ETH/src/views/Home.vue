@@ -1,5 +1,6 @@
 <template>
-  <div class="home-page page-container">
+  <van-pull-refresh v-model="refreshing" @refresh="onRefresh" class="home-page">
+  <div class="page-container">
     <!-- 顶部栏 -->
     <header class="home-header">
       <div class="header-left">
@@ -94,6 +95,7 @@
       </div>
     </section>
   </div>
+  </van-pull-refresh>
 </template>
 
 <script>
@@ -113,7 +115,8 @@ export default {
       newsList: [],
       marketStats: null,
       btcPrice: '$0.00',
-      btcChange: 0
+      btcChange: 0,
+      refreshing: false
     };
   },
   
@@ -139,7 +142,6 @@ export default {
             ...c,
             iconUrl: coinIconUrl(c.fromSymbol || c.coinName)
           }));
-          // 更新市场统计
           const btc = this.coins.find(c => c.fromSymbol === 'BTC');
           if (btc) {
             this.btcPrice = '$' + btc.lastPrice;
@@ -149,6 +151,12 @@ export default {
       } catch (e) {
         console.error('[Home] fetch error:', e);
       }
+    },
+    
+    async onRefresh() {
+      await this.fetchHome();
+      await this.fetchNews();
+      this.refreshing = false;
     },
     
     async fetchNews() {

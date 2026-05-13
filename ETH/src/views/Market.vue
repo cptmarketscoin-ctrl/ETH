@@ -34,6 +34,10 @@
         class="coin-row"
         @click="$router.push(`/trade/${coin.fromSymbol}`)"
       >
+        <div class="coin-star" @click.stop="toggleFav(coin.fromSymbol)">
+          <i :class="isFav(coin.fromSymbol) ? 'el-icon-star-on' : 'el-icon-star-off'" 
+             :style="{ color: isFav(coin.fromSymbol) ? '#e6a23c' : '#c0c4cc' }" />
+        </div>
         <div class="coin-left">
           <img :src="coin.iconUrl" :alt="coin.fromSymbol" class="coin-icon" @error="e => e.target.style.display='none'" />
           <div class="coin-info">
@@ -72,7 +76,9 @@ export default {
       coins: [],
       sortKey: 'volume',
       sortAsc: false,
+      favs: JSON.parse(localStorage.getItem('cpt_favs') || '[]'),
       sortTabs: [
+        { key: 'fav', label: '自选' },
         { key: 'name', label: '名称' },
         { key: 'price', label: '最新价' },
         { key: 'change', label: '涨跌幅' },
@@ -97,7 +103,14 @@ export default {
       return this.coins.filter(c => c.fromSymbol.includes(q));
     },
     sortedCoins() {
-      const arr = [...this.filteredCoins];
+      let arr = [...this.filteredCoins];
+      if (this.sortKey === 'fav') {
+        return arr.sort((a, b) => {
+          const fa = this.favs.includes(a.fromSymbol) ? 1 : 0;
+          const fb = this.favs.includes(b.fromSymbol) ? 1 : 0;
+          return this.sortAsc ? fa - fb : fb - fa;
+        });
+      }
       const k = this.sortKey;
       return arr.sort((a, b) => {
         let va, vb;
@@ -116,6 +129,13 @@ export default {
   
   methods: {
     fmtPrice,
+    isFav(s) { return this.favs.includes(s); },
+    toggleFav(s) {
+      const idx = this.favs.indexOf(s);
+      if (idx >= 0) this.favs.splice(idx, 1);
+      else this.favs.push(s);
+      localStorage.setItem('cpt_favs', JSON.stringify(this.favs));
+    },
     sortBy(key) {
       if (this.sortKey === key) {
         this.sortAsc = !this.sortAsc;
@@ -188,6 +208,7 @@ export default {
       .coin-name { font-weight: 600; }
       .coin-pair { font-size: var(--fs-xs); color: var(--text-3); margin-left: var(--sp-xs); }
     }
+    .coin-star { flex: 0 0 24px; font-size: 16px; cursor: pointer; }
     .coin-price { flex: 1; text-align: right; }
     .coin-change { flex: 0 0 80px; text-align: right; font-weight: 600; font-size: var(--fs-sm); }
     .coin-volume { flex: 0 0 80px; text-align: right; font-size: var(--fs-sm); color: var(--text-3); }

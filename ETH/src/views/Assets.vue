@@ -10,6 +10,9 @@
       <span class="total-value">${{ fmtPrice(totalValue) }}</span>
     </div>
 
+    <!-- 资产曲线 -->
+    <div ref="assetChart" class="asset-chart"></div>
+
     <!-- 币种余额列表 -->
     <div class="asset-list">
       <div v-for="item in balances" :key="item.coin" class="asset-row card">
@@ -65,6 +68,7 @@
 <script>
 import { coinIcon as coinIconUrl } from '../api';
 import { fmtPrice } from '../utils/price';
+let echarts = null; try { echarts = require('echarts'); } catch(e) {}
 
 export default {
   name: 'AssetsPage',
@@ -91,6 +95,21 @@ export default {
   
   methods: {
     fmtPrice,
+    
+    renderChart() {
+      if (!echarts || !this.$refs.assetChart || this.balances.length === 0) return;
+      if (!this.chart) this.chart = echarts.init(this.$refs.assetChart);
+      const data = this.balances.map(b => ({ name: b.coin, value: b.usdtValue || 0 }));
+      this.chart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
+        series: [{
+          type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
+          data: data.filter(d => d.value > 0),
+          label: { formatter: '{b}\n{d}%' },
+          itemStyle: { borderRadius: 4 }
+        }]
+      }, true);
+    },
     
     initBalances() {
       const coins = ['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','AVAX','USDT'];
@@ -143,6 +162,9 @@ export default {
   
   created() {
     this.initBalances();
+  },
+  mounted() {
+    this.$nextTick(() => this.renderChart());
   }
 };
 </script>
@@ -153,6 +175,11 @@ export default {
   margin-bottom: var(--sp-lg);
   .total-label { font-size: var(--fs-sm); color: var(--text-3); }
   .total-value { font-size: var(--fs-xxl); font-weight: 700; color: var(--up); }
+}
+
+.asset-chart {
+  height: 220px; background: var(--bg-white); border-radius: var(--radius-lg);
+  margin-bottom: var(--sp-lg);
 }
 
 .asset-list { display: flex; flex-direction: column; gap: var(--sp-md); }
