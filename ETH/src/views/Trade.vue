@@ -1,168 +1,96 @@
 <template>
-  <div class="trade-page">
-    <!-- Pair + Sub Tabs -->
-    <div class="t-pair-bar">
-      <span class="t-pair-name">{{pair}}</span>
-      <div class="t-sub-tabs">
-        <span :class="{on:subTab==='spot'}" @click="subTab='spot'">Spot</span>
-        <span :class="{on:subTab==='contract'}" @click="subTab='contract'">Contract</span>
-        <span :class="{on:subTab==='option'}" @click="subTab='option'">Option</span>
-      </div>
+<div class="trade-page">
+  <!-- Pair & Sub Tabs -->
+  <div class="t-top">
+    <div class="t-pair">BTC/USDT</div>
+    <div class="t-sub">
+      <span :class="{on:sub==='spot'}" @click="sub='spot'">Spot</span>
+      <span :class="{on:sub==='contract'}" @click="sub='contract'">Contract</span>
+      <span :class="{on:sub==='option'}" @click="sub='option'">Option</span>
     </div>
-
-    <!-- Kline -->
-    <div ref="kline" class="t-kline"></div>
-
-    <!-- Price display -->
-    <div class="t-price-display">
-      <span class="t-big-price" :class="priceUp ? 'up' : 'down'">{{currentPrice}}</span>
-      <span class="t-change" :class="priceUp ? 'up' : 'down'">{{priceChange}}%</span>
-    </div>
-
-    <!-- Buy/Sell buttons -->
-    <div class="t-bs-bar">
-      <span class="t-buy-btn" :class="{active:side==='buy'}" @click="side='buy';showPanel=true">Buy</span>
-      <span class="t-sell-btn" :class="{active:side==='sell'}" @click="side='sell';showPanel=true">Sell</span>
-    </div>
-
-    <!-- Order Panel -->
-    <div class="t-order-panel" v-if="showPanel">
-      <div class="t-op-row">
-        <label>Price($)</label>
-        <el-input-number v-model="price" :min="0" :precision="2" size="small" controls-position="right" class="t-inp" />
-      </div>
-      <div class="t-op-row">
-        <label>Amount</label>
-        <el-input-number v-model="amount" :min="0" :precision="4" size="small" controls-position="right" class="t-inp" />
-      </div>
-      <div class="t-op-row"><label>Total</label><span>{{(price*amount||0).toFixed(2)}} USDT</span></div>
-      <div class="t-op-btns">
-        <span class="t-cancel" @click="showPanel=false">Cancel</span>
-        <el-button :type="side==='buy'?'success':'danger'" size="small" class="t-confirm" @click="doOrder" :loading="loading">{{side==='buy'?'Buy':'Sell'}}</el-button>
-      </div>
-    </div>
-
-    <!-- Order Book -->
-    <div class="t-book">
-      <div class="t-book-hd">
-        <span>Price($)</span>
-        <span>Amount</span>
-        <span>Total</span>
-      </div>
-      <div class="t-book-asks">
-        <div v-for="(r,i) in asks" :key="'a'+i" class="t-book-row">
-          <span class="down">{{r.price}}</span>
-          <span>{{r.amount}}</span>
-          <span>{{(r.price*r.amount).toFixed(2)}}</span>
-        </div>
-      </div>
-      <div class="t-book-spread">
-        <span class="up">{{currentPrice}}</span>
-      </div>
-      <div class="t-book-bids">
-        <div v-for="(r,i) in bids" :key="'b'+i" class="t-book-row">
-          <span class="up">{{r.price}}</span>
-          <span>{{r.amount}}</span>
-          <span>{{(r.price*r.amount).toFixed(2)}}</span>
-        </div>
-      </div>
-    </div>
-
-    <div style="height:80px"></div>
   </div>
+
+  <!-- Price -->
+  <div class="t-price-row">
+    <span class="t-big">{{currentPrice}}</span>
+    <span class="t-diff" :class="priceUp?'up':'down'">{{diff}}%</span>
+  </div>
+
+  <!-- Kline -->
+  <div ref="kline" class="t-kline"></div>
+
+  <!-- Buy/Sell -->
+  <div class="t-bs">
+    <span class="t-buy" :class="{active:side==='buy'}" @click="side='buy';show=true">Buy</span>
+    <span class="t-sell" :class="{active:side==='sell'}" @click="side='sell';show=true">Sell</span>
+  </div>
+
+  <!-- Order form -->
+  <div class="t-form" v-if="show">
+    <div class="tf-row"><label>Price($)</label><el-input-number v-model="price" :min="0" :precision="2" size="small" class="tf-inp" controls-position="right"/></div>
+    <div class="tf-row"><label>Amount</label><el-input-number v-model="amount" :min="0" :precision="4" size="small" class="tf-inp" controls-position="right"/></div>
+    <div class="tf-row tf-total"><label>Total</label><span>{{((price||0)*(amount||0)).toFixed(2)}} USDT</span></div>
+    <div class="tf-btns"><span class="tf-cancel" @click="show=false">Cancel</span><el-button :type="side==='buy'?'success':'danger'" size="small" class="tf-submit" @click="doOrder" :loading="loading">{{side==='buy'?'Buy':'Sell'}}</el-button></div>
+  </div>
+
+  <!-- Order Book -->
+  <div class="t-book">
+    <div class="tb-hd"><span>Price($)</span><span>Amount</span><span>Total</span></div>
+    <div class="tb-asks">
+      <div v-for="(r,i) in asks" :key="'a'+i" class="tb-row"><span class="down">{{r.price}}</span><span>{{r.amount}}</span><span>{{(r.price*r.amount).toFixed(2)}}</span></div>
+    </div>
+    <div class="tb-spread"><span class="up">{{currentPrice}}</span></div>
+    <div class="tb-bids">
+      <div v-for="(r,i) in bids" :key="'b'+i" class="tb-row"><span class="up">{{r.price}}</span><span>{{r.amount}}</span><span>{{(r.price*r.amount).toFixed(2)}}</span></div>
+    </div>
+  </div>
+  <div style="height:80px"/>
+</div>
 </template>
 
 <script>
-import { pageHome, orderBook, placeOrder } from '../api';
-import { connect } from '../api/ws';
+import { pageHome, orderBook, placeOrder } from '../api'; import { connect } from '../api/ws';
 let ec=null;try{ec=require('echarts')}catch(e){}
-
-export default {
-  name:'TradePage',
-  data:()=>({
-    pair:'BTC/USDT', showPanel:false, side:'buy', subTab:'spot',
-    price:0, amount:0, loading:false,
-    currentPrice:'0.00', priceUp:true, priceChange:'-1.32',
-    asks:[], bids:[], chart:null
-  }),
-  computed:{coin(){return this.pair.split('/')[0]}},
-  watch:{pair(){this.fetchData();this.$nextTick(()=>this.renderKline())}},
+export default { name:'TradePage', data:()=>({side:'buy',show:false,sub:'spot',price:0,amount:0,loading:false,currentPrice:'0.00',priceUp:false,diff:'-1.18',asks:[],bids:[],chart:null}),
   methods:{
-    genBook(){
-      const b=parseFloat(this.currentPrice)||80000;
-      this.asks=[]; this.bids=[];
-      for(let i=1;i<=8;i++){
-        this.asks.push({price:(b*(1+i*.0004)).toFixed(2),amount:(Math.random()*2).toFixed(4)});
-        this.bids.push({price:(b*(1-i*.0004)).toFixed(2),amount:(Math.random()*2).toFixed(4)});
-      }
-    },
-    renderKline(){
-      if(!ec||!this.$refs.kline)return;
-      if(!this.chart)this.chart=ec.init(this.$refs.kline);
-      const b=parseFloat(this.currentPrice)||80000,ds=[],vs=[];
-      for(let i=30;i>=0;i--){const t=new Date(Date.now()-i*36e5);ds.push(t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'));const o=b*(1+(Math.random()-.5)*.02),c=o*(1+(Math.random()-.5)*.015);vs.push([o,Math.max(o,c)*(1+Math.random()*.005),Math.min(o,c)*(1-Math.random()*.005),c])}
-      this.chart.setOption({grid:{left:50,right:8,top:8,bottom:20},xAxis:{type:'category',data:ds,axisLabel:{fontSize:10,color:'#999'}},yAxis:{type:'value',scale:true,axisLabel:{fontSize:10,color:'#999'}},series:[{type:'candlestick',data:vs,itemStyle:{color:'#b9f82d',color0:'#ff4d4f',borderColor:'#b9f82d',borderColor0:'#ff4d4f'}}]},true);
-    },
-    async fetchData(){
-      try{const r=await orderBook(this.pair.replace('/',''));if(r.code===200&&r.data){this.asks=r.data.asks||[];this.bids=r.data.bids||[];}}catch(e){}this.genBook();
-    },
-    async doOrder(){
-      if(!this.amount)return this.$message.warning('Enter amount');
-      this.loading=true;
-      try{const r=await placeOrder({symbol:this.pair.replace('/',''),side:this.side,price:this.price||parseFloat(this.currentPrice),amount:this.amount});if(r.code===200){this.$message.success('Order filled');this.showPanel=false}}catch(e){this.$message.error(e.message)}
-      this.loading=false;
-    },
-    onWs(msg){
-      if(msg.type==='1004'){const d=msg.optionMakerResponse||{};if((msg.symbol||'').replace('USDT','')===this.coin){this.currentPrice=d.lastPrice||this.currentPrice;this.priceUp=parseFloat(d.rate||0)>=0;this.priceChange=(parseFloat(d.priceChangePercent||0)||0).toFixed(2);this.genBook()}}
-      if(msg.type==='1005'&&(msg.symbol||'').replace('USDT','')===this.coin){this.asks=msg.asks||[];this.bids=msg.bids||[]}
-    }
+    gb(){const b=parseFloat(this.currentPrice)||80000;this.asks=[];this.bids=[];for(let i=1;i<=8;i++){this.asks.push({price:(b*(1+i*.0004)).toFixed(2),amount:(Math.random()*2+.1).toFixed(4)});this.bids.push({price:(b*(1-i*.0004)).toFixed(2),amount:(Math.random()*2+.1).toFixed(4)})}},
+    rk(){if(!ec||!this.$refs.kline)return;if(!this.chart)this.chart=ec.init(this.$refs.kline);const b=parseFloat(this.currentPrice)||80000,ds=[],vs=[];for(let i=30;i>=0;i--){const t=new Date(Date.now()-i*36e5);ds.push(t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'));const o=b*(1+(Math.random()-.5)*.02),c=o*(1+(Math.random()-.5)*.015);vs.push([o,Math.max(o,c)*(1+Math.random()*.005),Math.min(o,c)*(1-Math.random()*.005),c])}this.chart.setOption({grid:{left:50,right:8,top:8,bottom:20},xAxis:{type:'category',data:ds,axisLabel:{fontSize:10,color:'#999'}},yAxis:{type:'value',scale:true,axisLabel:{fontSize:10,color:'#999'}},series:[{type:'candlestick',data:vs,itemStyle:{color:'#b9f82d',color0:'#ff4d4f',borderColor:'#b9f82d',borderColor0:'#ff4d4f'}}]},true)},
+    async doOrder(){if(!this.amount)return this.$message.warning('Enter amount');this.loading=true;try{const r=await placeOrder({symbol:'BTCUSDT',side:this.side,price:this.price||parseFloat(this.currentPrice),amount:this.amount});if(r.code===200){this.$message.success('Order filled');this.show=false;this.gb()}}catch(e){this.$message.error(e.message)}this.loading=false},
+    onWs(msg){if(msg.type==='1004'){const d=msg.optionMakerResponse||{};if((msg.symbol||'')==='BTCUSDT'){this.currentPrice=d.lastPrice||this.currentPrice;this.priceUp=parseFloat(d.rate||0)>=0;this.diff=((parseFloat(d.priceChangePercent||0)||0)).toFixed(2);this.gb();this.rk()}}if(msg.type==='1005'&&(msg.symbol||'')==='BTCUSDT'){this.asks=msg.asks||[];this.bids=msg.bids||[]}}
   },
-  created(){
-    pageHome().then(r=>{if(r.code===200){(r.content||[]).forEach(c=>{if(c.fromSymbol===this.coin)this.currentPrice=c.lastPrice||'0.00'})}});
-    this.fetchData();
-  },
-  mounted(){connect(this.onWs);this.$nextTick(()=>this.renderKline())},
-  beforeDestroy(){if(this.chart)this.chart.dispose()}
-};
+  created(){pageHome().then(r=>{if(r.code===200){const btc=(r.content||[]).find(c=>c.fromSymbol==='BTC');if(btc)this.currentPrice=btc.lastPrice||'0.00'}});this.gb()},
+  mounted(){connect(this.onWs);this.$nextTick(()=>this.rk())}, beforeDestroy(){if(this.chart)this.chart.dispose()}};
 </script>
 
 <style scoped>
-.trade-page { padding: .133rem .16rem .8rem; min-height: 100vh; }
-
-.t-pair-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: .133rem; }
-.t-pair-name { font-size: .24rem; font-weight: 700; }
-.t-sub-tabs { display: flex; gap: .08rem; }
-.t-sub-tabs span { font-size: .133rem; color: var(--text-3); padding: .04rem .107rem; border-radius: .053rem; cursor: pointer; }
-.t-sub-tabs span.on { color: var(--primary); background: rgba(20,161,243,.1); }
-
-.t-kline { height: 2.67rem; background: var(--bg-white); border-radius: .107rem; margin-bottom: .133rem; border: 1px solid var(--border-1); }
-
-.t-price-display { display: flex; align-items: baseline; gap: .107rem; margin-bottom: .16rem; }
-.t-big-price { font-size: .32rem; font-weight: 700; font-family: var(--font-mono); }
-.t-change { font-size: .173rem; font-weight: 600; }
-
-.t-bs-bar { display: flex; gap: .107rem; margin-bottom: .16rem; }
-.t-buy-btn, .t-sell-btn { flex: 1; text-align: center; padding: .107rem; border-radius: .067rem; font-size: .173rem; font-weight: 600; cursor: pointer; }
-.t-buy-btn { color: var(--up); border: 1px solid var(--up); }
-.t-buy-btn.active { background: var(--up); color: #1b1c20; }
-.t-sell-btn { color: var(--down); border: 1px solid var(--down); }
-.t-sell-btn.active { background: var(--down); color: #fff; }
-
-.t-order-panel { background: var(--bg-white); border-radius: .107rem; padding: .16rem; margin-bottom: .16rem; border: 1px solid var(--border-1); }
-.t-op-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: .107rem; }
-.t-op-row label { font-size: .147rem; color: var(--text-2); }
-.t-inp { width: 1.6rem; }
-.t-op-btns { display: flex; gap: .107rem; margin-top: .133rem; }
-.t-cancel { flex: 1; text-align: center; padding: .08rem; border-radius: .067rem; border: 1px solid var(--border-1); font-size: .16rem; cursor: pointer; }
-.t-confirm { flex: 1; }
-
-.t-book { background: var(--bg-white); border-radius: .107rem; border: 1px solid var(--border-1); overflow: hidden; }
-.t-book-hd { display: flex; justify-content: space-between; padding: .08rem .133rem; font-size: .12rem; color: var(--text-4); border-bottom: 1px solid var(--border-1); }
-.t-book-hd span { flex: 1; }
-.t-book-row { display: flex; justify-content: space-between; padding: .04rem .133rem; font-size: .133rem; font-family: var(--font-mono); }
-.t-book-row span { flex: 1; }
-.t-book-row span:last-child { color: var(--text-3); }
-.t-book-spread { text-align: center; padding: .08rem; font-size: .213rem; font-weight: 700; font-family: var(--font-mono); border-top: 1px solid var(--border-1); border-bottom: 1px solid var(--border-1); }
-
-.up { color: var(--up); } .down { color: var(--down); }
+.trade-page{padding:12px 16px 80px;min-height:100vh}
+.t-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.t-pair{font-size:22px;font-weight:700;color:#fff}
+.t-sub{display:flex;gap:6px}
+.t-sub span{font-size:12px;color:#999;padding:4px 10px;border-radius:4px;cursor:pointer}
+.t-sub span.on{color:#14a1f3;background:rgba(20,161,243,.1)}
+.t-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.t-big{font-size:28px;font-weight:700;font-family:var(--font-mono)}
+.t-diff{font-size:16px;font-weight:600}
+.t-kline{height:240px;background:#32353c;border-radius:8px;margin-bottom:12px;border:1px solid #31353d}
+.t-bs{display:flex;gap:10px;margin-bottom:12px}
+.t-buy,.t-sell{flex:1;text-align:center;padding:10px;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer}
+.t-buy{color:#b9f82d;border:1px solid #b9f82d}.t-buy.active{background:#b9f82d;color:#1b1c20}
+.t-sell{color:#ff4d4f;border:1px solid #ff4d4f}.t-sell.active{background:#ff4d4f;color:#fff}
+.t-form{background:#32353c;border-radius:8px;padding:16px;margin-bottom:12px;border:1px solid #31353d}
+.tf-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tf-row label{font-size:14px;color:rgb(196,196,196);width:80px}
+.tf-inp{flex:1}
+.tf-total span{font-size:16px;font-weight:600;color:#fff}
+.tf-btns{display:flex;gap:8px;margin-top:12px}
+.tf-cancel{flex:1;text-align:center;padding:8px;border-radius:6px;border:1px solid #31353d;font-size:14px;color:#ccc;cursor:pointer}
+.tf-submit{flex:1}
+.t-book{background:#32353c;border-radius:8px;border:1px solid #31353d;overflow:hidden}
+.tb-hd{display:flex;justify-content:space-between;padding:8px 12px;font-size:11px;color:#999;border-bottom:1px solid #31353d}
+.tb-hd span{flex:1}
+.tb-row{display:flex;justify-content:space-between;padding:3px 12px;font-size:13px;font-family:var(--font-mono)}
+.tb-row span{flex:1}
+.tb-row span:last-child{color:#999}
+.tb-spread{text-align:center;padding:8px;font-size:20px;font-weight:700;font-family:var(--font-mono);border-top:1px solid #31353d;border-bottom:1px solid #31353d}
+.up{color:#b9f82d}.down{color:#ff4d4f}
 </style>

@@ -1,51 +1,77 @@
 <template>
-  <div class="earn-page">
-    <header class="e-header"><h2>Earn</h2></header>
+<div class="login-page">
+  <h2>Sign in</h2>
 
-    <!-- Loan -->
-    <div class="e-card">
-      <div class="e-icon"><i class="el-icon-money" style="font-size:32px;color:var(--primary)" /></div>
-      <h3>Loan</h3>
-      <p class="e-sub">Borrow with peace of mind</p>
-      <p class="e-desc">Safe and flexible borrowing to improve fund utilization</p>
-      <el-button type="primary" size="small" round>Borrow Now</el-button>
+  <div class="lg-form">
+    <div class="lg-field">
+      <label>UserName</label>
+      <el-input v-model="username" placeholder="Enter username" size="medium"/>
+    </div>
+    <div class="lg-field">
+      <label>Login password</label>
+      <el-input v-model="password" placeholder="Enter password" type="password" size="medium" show-password/>
     </div>
 
-    <!-- ICO -->
-    <div class="e-card">
-      <div class="e-icon"><i class="el-icon-s-promotion" style="font-size:32px;color:var(--up)" /></div>
-      <h3>ICO</h3>
-      <p class="e-sub">Invest in newly issued tokens</p>
-      <p class="e-desc">Enjoy potentially high return opportunities. Start your ICO journey.</p>
-      <el-button type="primary" size="small" round>View ICO Projects</el-button>
+    <div class="lg-forgot">
+      <span>Forgot password?</span>
     </div>
 
-    <!-- Fast plate actions -->
-    <div class="e-actions">
-      <div class="e-act"><i class="el-icon-upload2" /><span>Deposit</span></div>
-      <div class="e-act"><i class="el-icon-download" /><span>Withdraw</span></div>
-      <div class="e-act"><i class="el-icon-s-promotion" /><span>ICO</span></div>
-      <div class="e-act"><i class="el-icon-money" /><span>Loan</span></div>
+    <el-button type="primary" class="lg-btn" @click="login" :loading="loading">Sign in</el-button>
+
+    <div class="lg-terms">
+      Logging in implies agreement <a>Terms of Service</a> 、 <a>Privacy Policy</a> 、 <a>Anti-Money Laundering</a>
     </div>
 
-    <div style="height:60px"></div>
+    <div class="lg-signup">
+      Don't have an account? <span @click="$router.push('/register')">Sign up</span>
+    </div>
   </div>
+
+  <!-- Also show Earn content below login -->
+  <div class="lg-earn">
+    <div class="ei-section">
+      <div class="ei-card">
+        <div class="ei-icon">$</div>
+        <h3>Loan</h3>
+        <p>Borrow with peace of mind</p>
+        <span class="ei-cta">Click to view</span>
+      </div>
+      <div class="ei-card">
+        <div class="ei-icon">◆</div>
+        <h3>ICO</h3>
+        <p>Invest in newly issued tokens</p>
+        <span class="ei-cta">Start your ICO journey</span>
+      </div>
+    </div>
+  </div>
+  <div style="height:80px"/>
+</div>
 </template>
 
 <script>
-export default { name: 'EarnPage' };
+import { login } from '../api';
+export default { name:'EarnPage', data:()=>({username:'',password:'',loading:false}), methods:{async login(){if(!this.username||!this.password)return this.$message.warning('Enter credentials');this.loading=true;try{const r=await login(this.username,this.password);if(r.code===200){this.$message.success('Login successful');localStorage.setItem('cpt_token',r.data?.token||'');}else{this.$message.error(r.msg||'Login failed')}}catch(e){this.$message.error(e.message)}this.loading=false}} };
 </script>
 
 <style scoped>
-.earn-page { padding: .133rem .16rem .8rem; min-height: 100vh; }
-.e-header h2 { font-size: .213rem; font-weight: 700; margin-bottom: .133rem; }
+.login-page{padding:32px 24px;min-height:100vh;text-align:center}
+h2{font-size:24.96px;font-weight:600;color:#fff;margin-bottom:32px}
+.lg-form{max-width:340px;margin:0 auto}
+.lg-field{margin-bottom:16px;text-align:left}
+.lg-field label{display:block;font-size:14px;color:rgb(196,196,196);margin-bottom:6px}
+.lg-forgot{text-align:right;margin-bottom:24px}
+.lg-forgot span{font-size:13px;color:#14a1f3;cursor:pointer}
+.lg-btn{width:100%;height:46px;font-size:16px;font-weight:600;border-radius:8px}
+.lg-terms{font-size:12px;color:#999;margin-top:20px;line-height:1.6}
+.lg-terms a{color:#14a1f3}
+.lg-signup{font-size:14px;color:#999;margin-top:16px}
+.lg-signup span{color:#14a1f3;cursor:pointer}
 
-.e-card { background: var(--bg-white); border-radius: .107rem; padding: .213rem; margin-bottom: .133rem; border: 1px solid var(--border-1); text-align: center; }
-.e-card h3 { font-size: .2rem; margin: .08rem 0 .053rem; }
-.e-sub { font-size: .16rem; color: var(--text-2); }
-.e-desc { font-size: .133rem; color: var(--text-3); margin: .08rem 0 .133rem; }
-
-.e-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: .107rem; margin-top: .133rem; }
-.e-act { display: flex; flex-direction: column; align-items: center; gap: .053rem; padding: .16rem; background: var(--bg-white); border-radius: .107rem; border: 1px solid var(--border-1); font-size: .133rem; }
-.e-act i { font-size: .267rem; color: var(--primary); }
+.lg-earn{margin-top:40px}
+.ei-section{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ei-card{background:#32353c;border-radius:8px;padding:20px 16px;text-align:center;border:1px solid #31353d}
+.ei-icon{font-size:28px;color:#14a1f3;font-style:normal;margin-bottom:8px}
+.ei-card h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.ei-card p{font-size:13px;color:rgb(196,196,196);margin-bottom:12px}
+.ei-cta{font-size:14px;color:#14a1f3;font-weight:600;cursor:pointer}
 </style>
