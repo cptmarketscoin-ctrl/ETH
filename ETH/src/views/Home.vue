@@ -60,6 +60,10 @@
           <span>{{ coin.rate }}%</span>
         </div>
         
+        <div class="coin-kline">
+          <MiniKline :data="coin.klineRespList || []" :isUp="coin.isUp" />
+        </div>
+        
         <div class="coin-volume">
           <span class="label">24h Vol</span>
           <span>{{ fmtVolume(coin.twentyFourHrResp?.volume || 0) }}</span>
@@ -96,9 +100,11 @@
 import { pageHome, getStockList, coinIcon as coinIconUrl } from '../api';
 import { connect } from '../api/ws';
 import { fmtPrice, fmtChange, fmtVolume } from '../utils/price';
+import MiniKline from '../components/MiniKline.vue';
 
 export default {
   name: 'HomePage',
+  components: { MiniKline },
   
   data() {
     return {

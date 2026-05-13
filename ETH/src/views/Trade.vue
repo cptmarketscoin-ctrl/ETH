@@ -12,13 +12,8 @@
       </span>
     </header>
 
-    <!-- K线图区域（占位） -->
-    <div class="kline-area">
-      <div class="kline-placeholder">
-        <i class="el-icon-data-line" style="font-size:48px;color:var(--text-4)" />
-        <p>K线图区域 — 可接 TradingView</p>
-      </div>
-    </div>
+    <!-- K线图 -->
+    <div ref="klineChart" class="kline-area"></div>
 
     <!-- 下单面板 -->
     <div class="trade-panel">
@@ -124,6 +119,7 @@
 import { pageHome, orderBook, placeOrder as apiPlaceOrder, cancelOrder as apiCancel, currentOrders } from '../api';
 import { connect } from '../api/ws';
 import { fmtPrice } from '../utils/price';
+let echarts = null; try { echarts = require('echarts'); } catch(e) {}
 
 export default {
   name: 'TradePage',
@@ -154,11 +150,36 @@ export default {
   },
   
   watch: {
-    activePair() { this.fetchOrders(); }
+    activePair() { this.fetchOrders(); this.$nextTick(() => this.renderKline()); }
   },
   
   methods: {
     fmtPrice,
+    
+    renderKline() {
+      if (!echarts || !this.$refs.klineChart) return;
+      if (!this.klineChart) this.klineChart = echarts.init(this.$refs.klineChart);
+      // 生成模拟K线
+      const base = parseFloat(this.currentPrice) || 80000;
+      const dates = [], values = [], volumes = [];
+      for (let i = 30; i >= 0; i--) {
+        const t = new Date(Date.now() - i * 3600000);
+        dates.push(t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0'));
+        const o = base * (1 + (Math.random() - 0.5) * 0.02);
+        const c = o * (1 + (Math.random() - 0.5) * 0.015);
+        values.push([o, Math.max(o, c) * (1 + Math.random() * 0.005), Math.min(o, c) * (1 - Math.random() * 0.005), c]);
+        volumes.push(Math.round(Math.random() * 100));
+      }
+      this.klineChart.setOption({
+        grid: { left: 60, right: 10, top: 10, bottom: 30 },
+        xAxis: { type: 'category', data: dates, axisLabel: { fontSize: 10 } },
+        yAxis: { type: 'value', scale: true, axisLabel: { fontSize: 10, formatter: v => v.toFixed(2) } },
+        series: [{
+          type: 'candlestick', data: values,
+          itemStyle: { color: '#07c160', color0: '#ee0a24', borderColor: '#07c160', borderColor0: '#ee0a24' }
+        }]
+      }, true);
+    },
     
     async fetchOrderBook() {
       try {
@@ -236,13 +257,14 @@ export default {
             this.currentPrice = c.lastPrice || '0.00';
           }
         });
+        this.$nextTick(() => this.renderKline());
       }
     });
     this.fetchOrderBook();
     this.fetchOrders();
   },
   
-  mounted() { connect(this.onWsMessage); }
+  mounted() { connect(this.onWsMessage); this.$nextTick(() => this.renderKline()); }
 };
 </script>
 
@@ -255,12 +277,8 @@ export default {
 }
 
 .kline-area {
-  height: 300px; background: var(--bg-white); border-radius: var(--radius-lg);
+  height: 320px; background: var(--bg-white); border-radius: var(--radius-lg);
   margin-bottom: var(--sp-md);
-  .kline-placeholder {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; color: var(--text-3); gap: var(--sp-sm);
-  }
 }
 
 .trade-panel {
