@@ -133,6 +133,28 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
   
   console.log("[PROXY] SIMPLE version installed successfully");
   
+  // 🔧 拦截 Image 加载：rockieFile/getFile 代理到后端
+  var _Image = window.Image;
+  window.Image = function(w, h) {
+    var img = new _Image(w, h);
+    var _srcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src') ||
+                   Object.getOwnPropertyDescriptor(_Image.prototype, 'src');
+    if (_srcDesc && _srcDesc.set) {
+      Object.defineProperty(img, 'src', {
+        get: function() { return _srcDesc.get.call(this); },
+        set: function(v) {
+          if (v && typeof v === 'string' && v.indexOf('rockieFile/getFile') !== -1) {
+            var newV = proxyUrl(v);
+            if (newV !== v) { v = newV; }
+          }
+          _srcDesc.set.call(this, v);
+        }
+      });
+    }
+    return img;
+  };
+  window.Image.prototype = _Image.prototype;
+  
   // 🔧 全局错误处理：防止 .map() 等运行时错误崩溃页面
   var _origOnerror = window.onerror;
   window.onerror = function(msg, src, line, col, err) {
