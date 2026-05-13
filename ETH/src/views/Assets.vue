@@ -1,217 +1,90 @@
 <template>
-  <div class="assets-page page-container">
-    <header class="page-header">
-      <h2>Assets</h2>
-    </header>
+  <div class="assets-page">
+    <header class="a-header"><h2>Assets</h2></header>
 
-    <!-- 总Assets -->
-    <div class="total-card card">
-      <span class="total-label">总AssetsEst. (USDT)</span>
-      <span class="total-value">${{ fmtPrice(totalValue) }}</span>
+    <div class="a-total">
+      <span class="a-label">Total Value (USDT)</span>
+      <span class="a-value up">{{ totalVal }}</span>
     </div>
 
-    <!-- AssetsChart -->
-    <div ref="assetChart" class="asset-chart"></div>
+    <div class="a-pie" ref="pie"></div>
 
-    <!--  -->
-    <div class="asset-list">
-      <div v-for="item in balances" :key="item.coin" class="asset-row card">
-        <div class="asset-left">
-          <img :src="item.icon" :alt="item.coin" class="asset-icon" @error="e => e.target.style.display='none'" />
-          <div class="asset-info">
-            <span class="asset-coin">{{ item.coin }}</span>
-            <span class="asset-fullname">{{ item.coin }} Wallet</span>
-          </div>
+    <div class="a-list" v-if="balances.length">
+      <div v-for="b in balances" :key="b.coin" class="a-row">
+        <div class="a-left">
+          <img :src="b.icon" class="a-icon" @error="e=>e.target.style.display='none'" />
+          <div><span class="a-coin">{{b.coin}}</span><span class="a-sub">Wallet</span></div>
         </div>
-        <div class="asset-right">
-          <div class="asset-balance">
-            <span class="balance-amount">{{ item.balance }}</span>
-            <span class="balance-value">≈ ${{ fmtPrice(item.usdtValue) }}</span>
-          </div>
+        <div class="a-right">
+          <span class="a-bal">{{b.balance}}</span>
+          <span class="a-usd">≈ ${{b.usdtValue.toFixed(2)}}</span>
         </div>
-        <div class="asset-actions">
-          <el-button size="mini" type="primary" plain @click="showDeposit(item)">Deposit</el-button>
-          <el-button size="mini" plain @click="showWithdraw(item)">Withdraw</el-button>
+        <div class="a-acts">
+          <el-button size="mini" type="primary" plain @click="showDeposit(b)">Deposit</el-button>
+          <el-button size="mini" plain @click="showWithdraw(b)">Withdraw</el-button>
         </div>
       </div>
     </div>
 
-    <!--  -->
-    <div v-if="loading" class="asset-list">
-      <div v-for="i in 5" :key="i" class="asset-row card">
-        <div class="skeleton" style="height: 40px; width: 100%" />
-      </div>
-    </div>
-
-    <!-- Deposit -->
-    <el-dialog :title="'Deposit ' + depositCoin" :visible.sync="depositVisible" width="360px">
-      <div class="deposit-content">
-        <p>Send to this address: {{ depositCoin }}：</p>
-        <div class="address-box">
-          <code>{{ depositAddress }}</code>
-          <el-button size="mini" type="primary" @click="copyAddress">复制</el-button>
-        </div>
-      </div>
+    <el-dialog :title="'Deposit '+depCoin" :visible.sync="depVis" width="360px">
+      <p style="font-size:.147rem;color:var(--text-2);margin-bottom:.107rem">Send to this address:</p>
+      <div style="background:var(--bg);padding:.107rem;border-radius:.067rem;word-break:break-all;font-size:.133rem">{{depAddr}}</div>
+      <el-button size="mini" type="primary" style="margin-top:.107rem" @click="copy(depAddr)">Copy</el-button>
     </el-dialog>
 
-    <!-- Withdraw -->
-    <el-dialog :title="'Withdraw ' + withdrawCoin" :visible.sync="withdrawVisible" width="360px">
-      <div class="withdraw-form">
-        <el-input v-model="withdrawAddress" placeholder="Withdraw地址" size="small" />
-        <el-input v-model="withdrawAmount" placeholder="Amount" size="small" type="number" style="margin-top:12px" />
-        <el-button type="primary" style="margin-top:16px;width:100%" @click="doWithdraw">确认Withdraw</el-button>
-      </div>
+    <el-dialog :title="'Withdraw '+wdCoin" :visible.sync="wdVis" width="360px">
+      <el-input v-model="wdAddr" placeholder="Address" size="small" />
+      <el-input v-model="wdAmt" placeholder="Amount" size="small" type="number" style="margin-top:.107rem" />
+      <el-button type="primary" style="margin-top:.133rem;width:100%" @click="doWd">Confirm</el-button>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { coinIcon as coinIconUrl } from '../api';
-import { fmtPrice } from '../utils/price';
-let echarts = null; try { echarts = require('echarts'); } catch(e) {}
+import { coinIcon as cnIcon } from '../api';
+let ec=null;try{ec=require('echarts')}catch(e){}
 
 export default {
-  name: 'AssetsPage',
-  
-  data() {
-    return {
-      loading: false,
-      balances: [],
-      depositVisible: false,
-      depositCoin: '',
-      depositAddress: '',
-      withdrawVisible: false,
-      withdrawCoin: '',
-      withdrawAddress: '',
-      withdrawAmount: ''
-    };
+  name:'AssetsPage',
+  data:()=>({balances:[],depVis:false,depCoin:'',depAddr:'',wdVis:false,wdCoin:'',wdAddr:'',wdAmt:'',chart:null}),
+  computed:{totalVal(){return'$'+this.balances.reduce((s,b)=>s+(b.usdtValue||0),0).toFixed(2)}},
+  methods:{
+    init(){
+      const coins=['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','AVAX','USDT'];
+      const p={BTC:79300,ETH:2250,BNB:668,SOL:91,XRP:1.42,DOGE:.11,ADA:.26,AVAX:9.7,USDT:1};
+      const b={BTC:1.5,ETH:10,BNB:50,SOL:200,XRP:10000,DOGE:50000,ADA:30000,AVAX:500,USDT:100000};
+      this.balances=coins.map(c=>({coin:c,balance:b[c]||0,price:p[c]||0,usdtValue:(b[c]||0)*(p[c]||0),icon:cnIcon(c)}));
+      this.$nextTick(()=>this.renderPie());
+    },
+    renderPie(){if(!ec||!this.$refs.pie||!this.balances.length)return;if(!this.chart)this.chart=ec.init(this.$refs.pie);this.chart.setOption({tooltip:{trigger:'item',formatter:'{b}: ${c}'},series:[{type:'pie',radius:['55%','80%'],center:['50%','50%'],data:this.balances.filter(b=>b.usdtValue>0).map(b=>({name:b.coin,value:b.usdtValue})),label:{formatter:'{b}\n{d}%'},itemStyle:{borderRadius:4}}]},true)},
+    showDeposit(b){this.depCoin=b.coin;this.depAddr='0x'+Array.from({length:40},()=>Math.floor(Math.random()*16).toString(16)).join('');this.depVis=true},
+    copy(t){navigator.clipboard?.writeText(t);this.$message.success('Copied')},
+    showWithdraw(b){this.wdCoin=b.coin;this.wdAddr='';this.wdAmt='';this.wdVis=true},
+    doWd(){if(!this.wdAddr||!this.wdAmt)return this.$message.warning('Fill all fields');const b=this.balances.find(x=>x.coin===this.wdCoin);if(b&&parseFloat(this.wdAmt)>b.balance)return this.$message.error('Insufficient');b.balance-=parseFloat(this.wdAmt);b.usdtValue=b.balance*b.price;this.wdVis=false;this.$message.success('Withdrawal successful')}
   },
-  
-  computed: {
-    totalValue() {
-      return this.balances.reduce((sum, b) => sum + (b.usdtValue || 0), 0);
-    }
-  },
-  
-  methods: {
-    fmtPrice,
-    
-    renderChart() {
-      if (!echarts || !this.$refs.assetChart || this.balances.length === 0) return;
-      if (!this.chart) this.chart = echarts.init(this.$refs.assetChart);
-      const data = this.balances.map(b => ({ name: b.coin, value: b.usdtValue || 0 }));
-      this.chart.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-        series: [{
-          type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
-          data: data.filter(d => d.value > 0),
-          label: { formatter: '{b}\n{d}%' },
-          itemStyle: { borderRadius: 4 }
-        }]
-      }, true);
-    },
-    
-    initBalances() {
-      const coins = ['BTC','ETH','BNB','SOL','XRP','DOGE','ADA','AVAX','USDT'];
-      const prices = { BTC: 79300, ETH: 2250, BNB: 668, SOL: 91, XRP: 1.42, DOGE: 0.11, ADA: 0.26, AVAX: 9.7, USDT: 1 };
-      const balances = { BTC: 1.5, ETH: 10, BNB: 50, SOL: 200, XRP: 10000, DOGE: 50000, ADA: 30000, AVAX: 500, USDT: 100000 };
-      
-      this.balances = coins.map(c => ({
-        coin: c,
-        balance: balances[c] || 0,
-        price: prices[c] || 0,
-        usdtValue: (balances[c] || 0) * (prices[c] || 0),
-        icon: coinIconUrl(c)
-      }));
-    },
-    
-    showDeposit(item) {
-      this.depositCoin = item.coin;
-      this.depositAddress = '0x' + Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('');
-      this.depositVisible = true;
-    },
-    
-    copyAddress() {
-      navigator.clipboard?.writeText(this.depositAddress);
-      this.$message.success('Address copied');
-    },
-    
-    showWithdraw(item) {
-      this.withdrawCoin = item.coin;
-      this.withdrawAddress = '';
-      this.withdrawAmount = '';
-      this.withdrawVisible = true;
-    },
-    
-    doWithdraw() {
-      if (!this.withdrawAddress || !this.withdrawAmount) {
-        this.$message.warning('Fill in all fields');
-        return;
-      }
-      const item = this.balances.find(b => b.coin === this.withdrawCoin);
-      if (item && parseFloat(this.withdrawAmount) > item.balance) {
-        this.$message.error('Insufficient balance');
-        return;
-      }
-      item.balance -= parseFloat(this.withdrawAmount);
-      item.usdtValue = item.balance * item.price;
-      this.withdrawVisible = false;
-      this.$message.success('Withdraw成功');
-    }
-  },
-  
-  created() {
-    this.initBalances();
-  },
-  mounted() {
-    this.$nextTick(() => this.renderChart());
-  }
+  created(){this.init()}
 };
 </script>
 
-<style lang="scss" scoped>
-.total-card {
-  display: flex; flex-direction: column; gap: var(--sp-sm);
-  margin-bottom: var(--sp-lg);
-  .total-label { font-size: var(--fs-sm); color: var(--text-3); }
-  .total-value { font-size: var(--fs-xxl); font-weight: 700; color: var(--up); }
-}
+<style scoped>
+.assets-page{padding:.133rem .16rem .8rem;min-height:100vh}
+.a-header h2{font-size:.213rem;font-weight:700;margin-bottom:.133rem}
 
-.asset-chart {
-  height: 220px; background: var(--bg-white); border-radius: var(--radius-lg);
-  margin-bottom: var(--sp-lg);
-}
+.a-total{background:var(--bg-white);border-radius:.107rem;padding:.16rem;margin-bottom:.133rem;border:1px solid var(--border-1);display:flex;flex-direction:column;gap:.053rem}
+.a-label{font-size:.133rem;color:var(--text-3)}
+.a-value{font-size:.32rem;font-weight:700}
 
-.asset-list { display: flex; flex-direction: column; gap: var(--sp-md); }
+.a-pie{height:2.4rem;background:var(--bg-white);border-radius:.107rem;margin-bottom:.133rem;border:1px solid var(--border-1)}
 
-.asset-row {
-  display: flex; align-items: center; gap: var(--sp-md); flex-wrap: wrap;
-  
-  .asset-left {
-    display: flex; align-items: center; gap: var(--sp-sm); flex: 1; min-width: 150px;
-    .asset-icon { width: 32px; height: 32px; border-radius: 50%; }
-    .asset-coin { font-weight: 700; }
-    .asset-fullname { display: block; font-size: var(--fs-xs); color: var(--text-3); }
-  }
-  
-  .asset-right {
-    text-align: right; min-width: 120px;
-    .balance-amount { display: block; font-weight: 600; }
-    .balance-value { font-size: var(--fs-xs); color: var(--text-3); }
-  }
-  
-  .asset-actions { display: flex; gap: var(--sp-sm); }
-}
+.a-list{display:flex;flex-direction:column;gap:.107rem}
+.a-row{display:flex;align-items:center;gap:.107rem;flex-wrap:wrap;background:var(--bg-white);border-radius:.107rem;padding:.133rem .16rem;border:1px solid var(--border-1)}
+.a-left{display:flex;align-items:center;gap:.08rem;flex:1;min-width:1.6rem}
+.a-icon{width:.267rem;height:.267rem;border-radius:50%}
+.a-coin{font-size:.173rem;font-weight:700;display:block}
+.a-sub{font-size:.12rem;color:var(--text-3)}
+.a-right{text-align:right;min-width:1.2rem}
+.a-bal{font-size:.173rem;font-weight:600;display:block}
+.a-usd{font-size:.12rem;color:var(--text-3)}
 
-.address-box {
-  background: var(--bg); padding: var(--sp-md); border-radius: var(--radius-md);
-  word-break: break-all; margin-top: var(--sp-md);
-  code { font-size: var(--fs-xs); }
-  .el-button { margin-top: var(--sp-sm); }
-}
-
-@media (max-width: 480px) {
-  .asset-row { flex-direction: column; align-items: flex-start; }
-  .asset-actions { width: 100%; justify-content: flex-end; }
-}
+@media(max-width:480px){.a-row{flex-direction:column;align-items:flex-start}.a-acts{width:100%;justify-content:flex-end;display:flex}}
 </style>
