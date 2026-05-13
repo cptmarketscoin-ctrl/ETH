@@ -30,8 +30,9 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
     if (url.indexOf(KLAKNA_API_PROXY) !== -1) return url;
     if (url.indexOf('#') !== -1) return url;
     if (url.startsWith("data:") || url.startsWith("blob:")) return url;
-    if (url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2)(\?|$)/)) return url;
-    if (url.indexOf('/static/') !== -1) return url;
+    var urlPathOnly = url.split('?')[0].split('#')[0];
+    if (urlPathOnly.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2)(\?|$)/)) return url;
+    if (urlPathOnly.indexOf('/static/') !== -1) return url;
     
     // 代理所有非静态资源的相对路径请求（/exchange/, /api/, /uc/, /swap/ 等）
     if (url.match(/^https?:\/\//)) {
