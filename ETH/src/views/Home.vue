@@ -163,17 +163,27 @@ export default {
     onWsMessage(msg) {
       if (msg.type === '1004') {
         const { symbol, optionMakerResponse } = msg;
-        const fromSymbol = symbol.replace('USDT', '');
+        const fromSymbol = (symbol || '').replace('USDT', '');
         const data = optionMakerResponse || {};
         
         const idx = this.coins.findIndex(c => c.fromSymbol === fromSymbol);
         if (idx >= 0) {
-          this.$set(this.coins, idx, {
-            ...this.coins[idx],
-            lastPrice: data.lastPrice,
-            rate: parseFloat(data.priceChangePercent || 0).toFixed(2),
-            isUp: parseFloat(data.rate || 0) >= 0
-          });
+          const coin = { ...this.coins[idx] };
+          if (data.lastPrice) coin.lastPrice = data.lastPrice;
+          if (data.priceChangePercent !== undefined) {
+            coin.rate = parseFloat(data.priceChangePercent).toFixed(2);
+            coin.isUp = parseFloat(data.priceChangePercent) >= 0;
+            coin.priceChangePercentage = parseFloat(data.priceChangePercent);
+            coin.rate = coin.isUp ? '+' + coin.rate : coin.rate;
+          }
+          if (data.volume) coin.twentyFourHrResp = { ...coin.twentyFourHrResp, volume: data.volume };
+          if (data.priceChange) coin.priceChange = data.priceChange;
+          this.$set(this.coins, idx, coin);
+        }
+        // 更新 BTC 统计
+        if (fromSymbol === 'BTC') {
+          this.btcPrice = '$' + (data.lastPrice || coin.lastPrice);
+          this.btcChange = parseFloat(data.priceChangePercent || 0);
         }
       }
     }

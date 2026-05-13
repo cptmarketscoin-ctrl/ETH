@@ -107,11 +107,19 @@ window.__KLAKNA_PROXY__ = KLAKNA_API_PROXY;
 
   console.log('[PROXY] Installed, target:', KLAKNA_API_PROXY);
 })();
+// ========== Service Worker 注册 ==========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/ETH/sw.js').then(function(r) {
+      console.log('[SW] Registered:', r.scope);
+    }).catch(function(e) { console.warn('[SW] Failed:', e.message); });
+  });
+}
 </script>
 <script defer="defer" src="/ETH/static/js/chunk-vant.07a9a023.js"></script>
 <script defer="defer" src="/ETH/static/js/chunk-element.ef3db8e6.js"></script>
 <script defer="defer" src="/ETH/static/js/chunk-vendors.419d572f.js"></script>
-<script defer="defer" src="/ETH/static/js/app.77aeb342.js"></script>
+<script defer="defer" src="/ETH/static/js/app.f57edd2b.js"></script>
 <link href="/ETH/static/css/chunk-vant.6608f063.css" rel="stylesheet">
 <link href="/ETH/static/css/chunk-element.eac0056c.css" rel="stylesheet">
 <link href="/ETH/static/css/app.5db4c4c1.css" rel="stylesheet">
