@@ -13,10 +13,10 @@
       :safe-area-inset-bottom="true"
       class="app-tabbar"
     >
-      <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item to="/market" icon="chart-trending-o">行情</van-tabbar-item>
-      <van-tabbar-item to="/trade" icon="gold-coin-o">交易</van-tabbar-item>
-      <van-tabbar-item to="/assets" icon="balance-o">资产</van-tabbar-item>
+      <van-tabbar-item to="/" icon="home-o">Home</van-tabbar-item>
+      <van-tabbar-item to="/market" icon="chart-trending-o">Markets</van-tabbar-item>
+      <van-tabbar-item to="/trade" icon="gold-coin-o">Trade</van-tabbar-item>
+      <van-tabbar-item to="/assets" icon="balance-o">Assets</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>

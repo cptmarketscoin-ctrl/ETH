@@ -10,8 +10,7 @@
         <span class="header-badge">PRO</span>
       </div>
       <div class="header-right">
-        <i class="el-icon-bell" style="font-size:20px;color:var(--text-2);cursor:pointer" />
-        <i class="el-icon-user" style="font-size:20px;color:var(--text-2);cursor:pointer;margin-left:12px" />
+        <el-button type="primary" size="mini" round>Sign Up</el-button>
       </div>
     </header>
 
@@ -31,7 +30,7 @@
 
     <!-- 搜索 -->
     <div class="search-section">
-      <el-input v-model="searchText" placeholder="搜索币种" prefix-icon="el-icon-search" size="medium" class="search-input" clearable />
+      <el-input v-model="searchText" placeholder="Search coins..." prefix-icon="el-icon-search" size="medium" class="search-input" clearable />
     </div>
 
     <!-- 市场概览卡片 -->
@@ -62,7 +61,7 @@
 
     <!-- 币种卡片网格 -->
     <section class="coin-grid" v-if="coins.length > 0">
-      <div v-for="coin in filteredCoins" :key="coin.fromSymbol" class="coin-card" @click="$router.push(`/trade/${coin.fromSymbol}`)">
+      <div v-for="(coin, idx) in filteredCoins" :key="coin.fromSymbol" class="coin-card" :style="{ animationDelay: idx * 0.06 + 's' }" @click="$router.push(`/trade/${coin.fromSymbol}`)">
         
         <div class="card-top">
           <div class="card-header">
@@ -113,8 +112,8 @@
     <!-- 新闻 -->
     <section class="news-section" v-if="newsList.length > 0">
       <div class="section-header">
-        <h3>市场资讯</h3>
-        <span class="section-more">更多 <i class="el-icon-arrow-right" /></span>
+        <h3>Market News</h3>
+        <span class="section-more">More <i class="el-icon-arrow-right" /></span>
       </div>
       <div class="news-list">
         <div v-for="(item, i) in newsList.slice(0, 6)" :key="i" class="news-row">
@@ -147,7 +146,7 @@ export default {
   data() {
     return {
       searchText: '', refreshing: false, activeCat: '全部',
-      categories: ['全部', '主流币', 'DeFi', 'Layer2', 'Meme'],
+      categories: ['All', 'Main', 'DeFi', 'Layer 2', 'Meme'],
       coins: [], tickerCoins: [], newsList: [],
       btcPrice: '0.00', btcChange: 0
     };
@@ -267,6 +266,7 @@ export default {
 .coin-card {
   background: var(--bg-white); border-radius: 10px; padding: 14px; cursor: pointer;
   border: 1px solid var(--border-1); transition: border-color .2s;
+  animation: cardSlideUp .5s ease both;
   &:hover { border-color: var(--primary); }
 
   .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -303,4 +303,9 @@ export default {
 .news-coin { font-size: 13px; font-weight: 600; }
 .news-desc { font-size: 11px; color: var(--text-3); }
 .news-right { font-size: 13px; font-weight: 600; }
+
+@keyframes cardSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
