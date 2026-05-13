@@ -43,18 +43,10 @@ module.exports = defineConfig({
   },
 
   chainWebpack: config => {
-    // 排除 index.html 中的 proxy 脚本被处理
-    config.plugin('html').tap(args => {
-      args[0].title = 'CPT Exchange - Buy Bitcoin & Crypto';
+    config.plugin('copy').tap(args => {
+      if (!args[0].patterns) args[0].patterns = [];
+      args[0].patterns.push({ from: 'public/klakna.css', to: 'klakna.css' });
       return args;
     });
   },
-
-  css: {
-    loaderOptions: {
-      sass: {
-        additionalData: ''
-      }
-    }
-  }
 });
