@@ -293,6 +293,41 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
       e.preventDefault();
     }
   });
+  
+  // ===== DOM价格兜底：只格式化含price/coin相关class的元素 =====
+  var _domPriceRE = /^-?\d+(\.\d+)?$/;
+  function _shouldFormatPrice(num) {
+    if (num >= 1000) return num.toFixed(2);
+    if (num >= 1)   return num.toFixed(Math.min(4, (num.toFixed(8).match(/\.(\d*[1-9])/)||['',''])[1].length||3));
+    if (num >= 0.01) return num.toFixed(6);
+    return num.toFixed(8);
+  }
+  function _walkPriceNodes(root) {
+    var els = root.querySelectorAll ? root.querySelectorAll('[class*="price"],[class*="Price"],[class*="last"],[class*="Last"]') : [];
+    var count = 0;
+    els.forEach(function(el) {
+      var t = el.textContent.trim();
+      if (!_domPriceRE.test(t)) return;
+      var n = parseFloat(t);
+      if (isNaN(n) || n === 0) return;
+      var f = _shouldFormatPrice(n);
+      if (f !== t) { el.textContent = f; count++; }
+    });
+    if (count > 0) console.log('[PROXY-DOM] Formatted', count, 'price elements');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { _walkPriceNodes(document.body); });
+  }
+  if (window.MutationObserver) {
+    var _domTimer = null;
+    var _domObs = new MutationObserver(function() {
+      if (_domTimer) clearTimeout(_domTimer);
+      _domTimer = setTimeout(function() { _walkPriceNodes(document.body); }, 800);
+    });
+    setTimeout(function() {
+      if (document.body) _domObs.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }, 1500);
+  }
 })();
 </script><script defer="defer" src="/ETH/static/js/chunk-vendors.1774378911945.js?v=3"></script><script defer="defer" src="/ETH/static/js/app.1774378911945.js?v=3"></script><link href="/ETH/static/css/chunk-vendors.1774378911945.css?v=3" rel="stylesheet"><link href="/ETH/static/css/app.1774378911945.css?v=3" rel="stylesheet"><script>
 // 注册 Service Worker
