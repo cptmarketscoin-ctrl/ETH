@@ -1,47 +1,36 @@
-// ===== CPT Exchange — 从 klakna.sbs 提取的精确像素值 =====
+// ===== CPT Exchange — klakna.sbs 真实提取值 =====
 
 :root {
-  /* 背景 —— 原站 body */
-  --bg-body: #1b1c20;
-  --bg-card: #252630;
-  --bg-white: #32353c;
-  --bg-hover: #3a3d45;
+  --bg-body: #151517;      /* 页面背景 rgb(21,21,23) */
+  --bg-card: #1c1c1e;      /* 卡片背景 rgb(28,28,30) */
+  --bg-white: #1c1c1e;
+  --bg-hover: #252530;
+  --bg-header: #161a1e;    /* header背景 rgb(22,26,30) */
 
-  /* 主色调 */
   --primary: #14a1f3;
   --primary-light: #03ddfe;
-
-  /* 涨跌 */
-  --up:   #b9f82d;
+  --up: #b9f82d;
   --down: #ff4d4f;
 
-  /* 文字 —— 精确提取 */
-  --text-white:   #ffffff;       /* 34px hero, 21px标题 */
-  --text-light:   rgb(196,196,196); /* 13.5px 标签 */
+  --text-white: #ffffff;
+  --text-light: rgb(196,196,196);
   --text-regular: #cccccc;
-  --text-muted:   #999999;
-  --text-dark:    rgb(0,0,0);    /* Connect按钮 */
+  --text-muted: #999999;
 
-  /* 边框 */
   --border: #31353d;
-  --border-light: #252630;
+  --border-light: #252530;
 
-  /* 字体 —— 原站提取 */
-  --font: -apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,
-    "Segoe UI",Arial,Roboto,"PingFang SC",miui,"Hiragino Sans GB",
-    "Microsoft Yahei",sans-serif;
+  --font: -apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,"Segoe UI",Arial,Roboto,"PingFang SC",miui,"Hiragino Sans GB","Microsoft Yahei",sans-serif;
   --font-mono: "SF Mono","Monaco","Menlo","Consolas",monospace;
 
-  /* 字号 —— 精确像素值 */
-  --fs-hero:    34.32px;   /* H6 Trade like a pro */
-  --fs-title:   20.787px;  /* 板块标题 Fast plate / Popular */
-  --fs-logo:    18.72px;   /* Logo Klakna */
-  --fs-section: 16.653px;  /* Loan 区块标题 */
-  --fs-action:  13.533px;  /* 操作按钮 Deposit/Withdraw/ICO */
-  --fs-body:    14px;
-  --fs-small:   12px;
-  --fs-tiny:    10px;
-
-  /* 圆角 —— rem 基准 75px */
+  --fs-hero: 34.32px;
+  --fs-title: 20.787px;
+  --fs-logo: 18.72px;
+  --fs-section: 16.653px;
+  --fs-action: 13.533px;
+  --fs-body: 14px;
+  --fs-small: 12px;
+  --fs-tiny: 10px;
   --radius-card: 8px;
+  --radius-btn: 26px;
 }
