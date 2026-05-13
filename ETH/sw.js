@@ -2,7 +2,7 @@
 // 与 index.html 内联代理逻辑保持一致
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.8-20260513';  // v1.8: getFile 强制代理
+var CACHE_VERSION = 'v1.9';  // v1.9: isStatic仅检查路径不含查询参数
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
@@ -35,16 +35,16 @@ self.addEventListener('activate', function(event) {
 
 // 检查是否是静态资源
 function isStatic(urlStr) {
-  // getFile 必须代理到后端，不是静态资源
-  if (urlStr.indexOf('rockieFile/getFile') !== -1) return false;
-  return urlStr.indexOf('/static/') !== -1 ||
-         urlStr.indexOf('/ETH/static/') === 0 ||
-         urlStr.indexOf('/ETH/img/') === 0 ||
-         urlStr.indexOf('/img/') === 0 ||
-         urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt|html)(\?|$)/) ||
-         urlStr.match(/\/ETH\/?$/) ||  // 页面入口 /ETH 或 /ETH/
-         urlStr.indexOf('.js?') !== -1 ||
-         urlStr.indexOf('.css?') !== -1;
+  // 分离路径和查询参数，只对路径部分做静态检查
+  var pathOnly = urlStr.split('?')[0].split('#')[0];
+  return pathOnly.indexOf('/static/') !== -1 ||
+         pathOnly.indexOf('/ETH/static/') === 0 ||
+         pathOnly.indexOf('/ETH/img/') === 0 ||
+         pathOnly.indexOf('/img/') === 0 ||
+         pathOnly.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt|html)$/) ||
+         pathOnly.match(/\/ETH\/?$/) ||
+         pathOnly.indexOf('.js?') !== -1 ||
+         pathOnly.indexOf('.css?') !== -1;
 }
 
 self.addEventListener('fetch', function(event) {
