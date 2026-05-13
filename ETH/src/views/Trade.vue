@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { pageHome, coinIcon as cnIcon } from '../api';
+import { pageHome, orderBook, placeOrder as apiPlaceOrder, cancelOrder as apiCancel, currentOrders } from '../api';
 import { connect } from '../api/ws';
 import { fmtPrice } from '../utils/price';
 
@@ -140,65 +140,88 @@ export default {
       currentPrice: '0.00',
       asks: [],
       bids: [],
-      orders: []
+      orders: [],
+      priceCache: {}
     };
   },
   
   computed: {
     coin() { return this.activePair.replace('USDT', ''); },
     orderTotal() {
-      return this.orderType === 'market' 
-        ? this.orderAmount * parseFloat(this.currentPrice || 0)
-        : this.orderAmount * this.orderPrice;
+      const p = this.orderType === 'market' ? parseFloat(this.currentPrice) : this.orderPrice;
+      return (this.orderAmount * p) || 0;
     }
   },
   
   watch: {
-    activePair() { this.generateOrderBook(); }
+    activePair() { this.fetchOrders(); }
   },
   
   methods: {
     fmtPrice,
     
-    generateOrderBook() {
-      const base = parseFloat(this.currentPrice) || 100;
-      const asks = [], bids = [];
-      for (let i = 1; i <= 8; i++) {
-        asks.push({ price: fmtPrice(base * (1 + i * 0.001)), amount: (Math.random() * 2).toFixed(4) });
-        bids.push({ price: fmtPrice(base * (1 - i * 0.001)), amount: (Math.random() * 2).toFixed(4) });
-      }
-      this.asks = asks;
-      this.bids = bids;
+    async fetchOrderBook() {
+      try {
+        const res = await orderBook(this.activePair);
+        if (res.code === 200 && res.data) {
+          this.asks = res.data.asks || [];
+          this.bids = res.data.bids || [];
+        }
+      } catch(e) {}
+    },
+    
+    async fetchOrders() {
+      try {
+        const res = await currentOrders(this.activePair);
+        if (res.code === 200) {
+          this.orders = (res.data && res.data.content) || [];
+        }
+      } catch(e) {}
     },
     
     async placeOrder() {
+      if (!this.orderAmount) { this.$message.warning('请输入数量'); return; }
       this.submitting = true;
-      setTimeout(() => {
-        this.submitting = false;
-        this.orders.unshift({
-          id: Date.now(),
+      try {
+        const res = await apiPlaceOrder({
+          symbol: this.activePair,
           side: this.side,
-          price: this.orderPrice || this.currentPrice,
-          amount: this.orderAmount,
-          total: fmtPrice(this.orderTotal),
-          status: '成交'
+          type: this.orderType,
+          price: this.orderPrice || parseFloat(this.currentPrice),
+          amount: this.orderAmount
         });
-        this.$message.success(`${this.side === 'buy' ? '买入' : '卖出'}成功`);
-      }, 800);
+        if (res.code === 200) {
+          this.$message.success(`${this.side === 'buy' ? '买入' : '卖出'}成功`);
+          this.fetchOrders();
+          this.fetchOrderBook();
+        } else {
+          this.$message.error(res.msg || '下单失败');
+        }
+      } catch(e) { this.$message.error(e.message); }
+      this.submitting = false;
     },
     
-    cancelOrder(id) {
-      this.orders = this.orders.filter(o => o.id !== id);
-      this.$message.info('已撤单');
+    async cancelOrder(id) {
+      try {
+        await apiCancel({ orderId: id });
+        this.orders = this.orders.filter(o => o.id !== id);
+        this.$message.info('已撤单');
+      } catch(e) {}
     },
     
     onWsMessage(msg) {
       if (msg.type === '1004') {
         const symbol = msg.symbol;
+        const data = msg.optionMakerResponse || {};
         if (symbol === this.activePair) {
-          const data = msg.optionMakerResponse || {};
           this.currentPrice = data.lastPrice || this.currentPrice;
-          this.generateOrderBook();
+        }
+        this.priceCache[symbol] = data;
+      }
+      if (msg.type === '1005') {
+        if (msg.symbol === this.activePair) {
+          this.asks = msg.asks || [];
+          this.bids = msg.bids || [];
         }
       }
     }
@@ -207,12 +230,16 @@ export default {
   created() {
     pageHome().then(res => {
       if (res.code === 200) {
-        const coins = res.content || [];
-        const current = coins.find(c => (c.fromSymbol + 'USDT') === this.activePair);
-        if (current) this.currentPrice = current.lastPrice || '0.00';
+        (res.content || []).forEach(c => {
+          this.priceCache[(c.fromSymbol || '') + 'USDT'] = { lastPrice: c.lastPrice };
+          if ((c.fromSymbol + 'USDT') === this.activePair) {
+            this.currentPrice = c.lastPrice || '0.00';
+          }
+        });
       }
     });
-    this.generateOrderBook();
+    this.fetchOrderBook();
+    this.fetchOrders();
   },
   
   mounted() { connect(this.onWsMessage); }
