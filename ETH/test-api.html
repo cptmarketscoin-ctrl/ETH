@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>CPT API 测试</title>
+<style>body{font-family:Arial;max-width:900px;margin:20px auto;background:#1a1a2e;color:#eee}
+.card{background:#16213e;border-radius:8px;padding:15px;margin:8px 0}
+.green{color:#00ff88}.red{color:#ff4466}.ok{color:#00ff88}.fail{color:#ff4466}
+.coin{display:flex;align-items:center;gap:10px;border-bottom:1px solid #333;padding:8px 0}
+.coin img{width:28px;height:28px;border-radius:50%}
+h2{color:#e94560} pre{background:#0f0f23;padding:10px;overflow-x:auto;font-size:11px}
+button{background:#e94560;color:white;border:0;padding:10px 20px;border-radius:4px;cursor:pointer;margin:5px}
+</style></head><body>
+<h1>🔍 CPT 后端连通性测试</h1>
+<div id="results"></div>
+<button onclick="testAll()">🔄 测试全部 API</button>
+<button onclick="testPageHome()">📊 测试首页数据</button>
+<button onclick="location.reload()">🔄 刷新</button>
+
+<script>
+var PROXY = 'https://api.cptnexus.sbs';
+var results = document.getElementById('results');
+
+function log(msg, cls) { results.innerHTML += '<div class="'+ (cls||'') +'">'+msg+'</div>'; }
+function clearLog() { results.innerHTML = ''; }
+
+async function testAll() {
+  clearLog();
+  log('<h2>🧪 开始测试...</h2>');
+  
+  // Test 1: Basic connectivity
+  try {
+    var r = await fetch(PROXY + '/health');
+    var d = await r.json();
+    log('✅ 后端连通: uptime=' + d.data.uptime + 's', 'ok');
+  } catch(e) { log('❌ 后端不通: ' + e.message, 'fail'); return; }
+
+  // Test 2: pageHome
+  try {
+    var r = await fetch(PROXY + '/exchange/Home/pageHome');
+    var d = await r.json();
+    log('✅ pageHome: ' + d.content.length + ' 个币种', 'ok');
+    d.content.forEach(function(c) {
+      var cls = c.isUp ? 'green' : 'red';
+      results.innerHTML += '<div class="coin">' +
+        '<img src="' + c.iconUrl + '" onerror="this.style.display=\'none\'" alt="">' +
+        '<b>' + c.coinName + '</b> $' + c.lastPrice +
+        ' <span class="' + cls + '">' + c.rate + '%</span>' +
+        ' K线:' + c.klineRespList.length + '条' +
+        '</div>';
+    });
+  } catch(e) { log('❌ pageHome: ' + e.message, 'fail'); }
+
+  // Test 3: getSymbols
+  try {
+    var r = await fetch(PROXY + '/exchange/rockieCoinFutures/getSymbols');
+    var d = await r.json();
+    log('✅ 站点名: ' + d.data.name + ' | fileId: ' + d.data.fileId, 'ok');
+  } catch(e) { log('❌ getSymbols: ' + e.message, 'fail'); }
+
+  // Test 4: getPrice
+  try {
+    var r = await fetch(PROXY + '/exchange/rockieCoinFutures/getPrice', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({symbol:'BTCUSDT'})
+    });
+    var d = await r.json();
+    log('✅ BTC 实时价: $' + d.price, 'ok');
+  } catch(e) { log('❌ getPrice: ' + e.message, 'fail'); }
+
+  // Test 5: Icons
+  try {
+    var r = await fetch('https://cptmarketscoin-ctrl.github.io/ETH/static/img/BTC.svg');
+    log('✅ BTC 图标: HTTP ' + r.status + ' ' + (r.ok?'可访问':'不可访问'), r.ok?'ok':'fail');
+  } catch(e) { log('❌ 图标加载: ' + e.message, 'fail'); }
+}
+
+testAll();
+</script>
+</body></html>
