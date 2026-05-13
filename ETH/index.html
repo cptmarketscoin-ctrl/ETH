@@ -77,8 +77,57 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
       }
     }
     
-    return _fetch.apply(this, arguments);
+    var p = _fetch.apply(this, arguments);
+    // 响应拦截：格式化价格
+    return p.then(function(resp) {
+      var ct = resp.headers.get('content-type') || '';
+      if (ct.indexOf('application/json') === -1) return resp;
+      return resp.clone().text().then(function(body) {
+        try {
+          var data = JSON.parse(body);
+          var changed = formatPrices(data);
+          if (changed) {
+            return new Response(JSON.stringify(data), {
+              status: resp.status, statusText: resp.statusText, headers: resp.headers
+            });
+          }
+        } catch(e) {}
+        return resp;
+      });
+    });
   };
+  
+  // 价格格式化函数
+  var _fmtPrice = function(p) {
+    if (typeof p !== 'number' || isNaN(p)) return false;
+    if (p >= 1000) return p.toFixed(2);
+    if (p >= 1) return p.toFixed(3);
+    if (p >= 0.01) return p.toFixed(4);
+    return p.toFixed(6);
+  };
+  
+  var _priceFields = ['lastPrice','high','low','openPrice','price','close','priceChange'];
+  function formatPrices(obj, depth) {
+    if (!obj || typeof obj !== 'object' || depth > 20) return false;
+    var changed = false;
+    if (Array.isArray(obj)) {
+      for (var i = 0; i < obj.length; i++) {
+        if (formatPrices(obj[i], (depth||0)+1)) changed = true;
+      }
+    } else {
+      for (var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+          if (_priceFields.indexOf(k) !== -1 && typeof obj[k] === 'number') {
+            var v = _fmtPrice(obj[k]);
+            if (v !== false) { obj[k] = v; changed = true; }
+          } else if (typeof obj[k] === 'object') {
+            if (formatPrices(obj[k], (depth||0)+1)) changed = true;
+          }
+        }
+      }
+    }
+    return changed;
+  }
   
   // 拦截 XMLHttpRequest
   var _open = XMLHttpRequest.prototype.open;
@@ -90,6 +139,30 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
       }
     }
     return _open.apply(this, arguments);
+  };
+  // XHR 响应拦截：格式化价格
+  var _xhrSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.send = function(body) {
+    var xhr = this;
+    var _origOnReady = xhr.onreadystatechange;
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var ct = xhr.getResponseHeader('content-type') || '';
+        if (ct.indexOf('application/json') !== -1) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            if (formatPrices(data)) {
+              Object.defineProperty(xhr, 'responseText', { value: JSON.stringify(data), writable: true });
+              if (xhr.responseType === '' || xhr.responseType === 'text') {
+                // responseText already set
+              }
+            }
+          } catch(e) {}
+        }
+      }
+      if (_origOnReady) _origOnReady.apply(xhr, arguments);
+    };
+    return _xhrSend.apply(this, arguments);
   };
   
   // 拦截 WebSocket - 将所有 WebSocket 代理到后端
@@ -113,6 +186,43 @@ setTimeout(tr,500);var _s=0;var _i=setInterval(function(){tr();fixTitle();if(++_
       }
       try {
         var ws = new OrigWebSocket(wsUrl, protocols);
+        // 拦截 WS 消息：格式化价格
+        var _origAddEv = ws.addEventListener.bind(ws);
+        ws.addEventListener = function(type, handler, opts) {
+          if (type === 'message') {
+            var wrapped = function(event) {
+              try {
+                var data = JSON.parse(event.data);
+                if (formatPrices(data)) {
+                  var newEvent = new MessageEvent('message', { data: JSON.stringify(data), origin: event.origin, lastEventId: event.lastEventId, source: event.source, ports: event.ports });
+                  return handler.call(this, newEvent || event);
+                }
+              } catch(e) {}
+              return handler.call(this, event);
+            };
+            return _origAddEv(type, wrapped, opts);
+          }
+          return _origAddEv(type, handler, opts);
+        };
+        // 也拦截 onmessage 属性
+        var _origDesc = Object.getOwnPropertyDescriptor(OrigWebSocket.prototype, 'onmessage') || {};
+        Object.defineProperty(ws, 'onmessage', {
+          get: function() { return this._onmessage; },
+          set: function(fn) {
+            this._onmessage = fn;
+            var self = this;
+            _origAddEv('message', function(event) {
+              try {
+                var data = JSON.parse(event.data);
+                if (formatPrices(data)) {
+                  var newEvent = new MessageEvent('message', { data: JSON.stringify(data), origin: event.origin, lastEventId: event.lastEventId });
+                  return fn.call(self, newEvent || event);
+                }
+              } catch(e) {}
+              return fn.call(self, event);
+            });
+          }
+        });
         // 🔧 WS 错误处理：连接失败时静默，不影响到页面
         ws.addEventListener('error', function(e) {
           console.warn('[PROXY] WebSocket error (non-fatal):', wsUrl);
