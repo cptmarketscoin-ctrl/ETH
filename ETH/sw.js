@@ -2,7 +2,7 @@
 // 与 index.html 内联代理逻辑保持一致
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.6-20260513';
+var CACHE_VERSION = 'v1.7-20260513';  // v1.7: 放行.html页面+入口路径
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
@@ -39,7 +39,8 @@ function isStatic(urlStr) {
          urlStr.indexOf('/ETH/static/') === 0 ||
          urlStr.indexOf('/ETH/img/') === 0 ||
          urlStr.indexOf('/img/') === 0 ||
-         urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt)(\?|$)/) ||
+         urlStr.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt|html)(\?|$)/) ||
+         urlStr.match(/\/ETH\/?$/) ||  // 页面入口 /ETH 或 /ETH/
          urlStr.indexOf('.js?') !== -1 ||
          urlStr.indexOf('.css?') !== -1;
 }
