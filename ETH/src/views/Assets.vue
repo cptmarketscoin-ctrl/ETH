@@ -1,19 +1,19 @@
 <template>
   <div class="assets-page page-container">
     <header class="page-header">
-      <h2>资产</h2>
+      <h2>Assets</h2>
     </header>
 
-    <!-- 总资产 -->
+    <!-- 总Assets -->
     <div class="total-card card">
-      <span class="total-label">总资产估值 (USDT)</span>
+      <span class="total-label">总AssetsEst. (USDT)</span>
       <span class="total-value">${{ fmtPrice(totalValue) }}</span>
     </div>
 
-    <!-- 资产曲线 -->
+    <!-- AssetsChart -->
     <div ref="assetChart" class="asset-chart"></div>
 
-    <!-- 币种余额列表 -->
+    <!--  -->
     <div class="asset-list">
       <div v-for="item in balances" :key="item.coin" class="asset-row card">
         <div class="asset-left">
@@ -30,23 +30,23 @@
           </div>
         </div>
         <div class="asset-actions">
-          <el-button size="mini" type="primary" plain @click="showDeposit(item)">充值</el-button>
-          <el-button size="mini" plain @click="showWithdraw(item)">提现</el-button>
+          <el-button size="mini" type="primary" plain @click="showDeposit(item)">Deposit</el-button>
+          <el-button size="mini" plain @click="showWithdraw(item)">Withdraw</el-button>
         </div>
       </div>
     </div>
 
-    <!-- 骨架屏 -->
+    <!--  -->
     <div v-if="loading" class="asset-list">
       <div v-for="i in 5" :key="i" class="asset-row card">
         <div class="skeleton" style="height: 40px; width: 100%" />
       </div>
     </div>
 
-    <!-- 充值弹窗 -->
-    <el-dialog :title="'充值 ' + depositCoin" :visible.sync="depositVisible" width="360px">
+    <!-- Deposit -->
+    <el-dialog :title="'Deposit ' + depositCoin" :visible.sync="depositVisible" width="360px">
       <div class="deposit-content">
-        <p>请向以下地址转账 {{ depositCoin }}：</p>
+        <p>Send to this address: {{ depositCoin }}：</p>
         <div class="address-box">
           <code>{{ depositAddress }}</code>
           <el-button size="mini" type="primary" @click="copyAddress">复制</el-button>
@@ -54,12 +54,12 @@
       </div>
     </el-dialog>
 
-    <!-- 提现弹窗 -->
-    <el-dialog :title="'提现 ' + withdrawCoin" :visible.sync="withdrawVisible" width="360px">
+    <!-- Withdraw -->
+    <el-dialog :title="'Withdraw ' + withdrawCoin" :visible.sync="withdrawVisible" width="360px">
       <div class="withdraw-form">
-        <el-input v-model="withdrawAddress" placeholder="提现地址" size="small" />
-        <el-input v-model="withdrawAmount" placeholder="数量" size="small" type="number" style="margin-top:12px" />
-        <el-button type="primary" style="margin-top:16px;width:100%" @click="doWithdraw">确认提现</el-button>
+        <el-input v-model="withdrawAddress" placeholder="Withdraw地址" size="small" />
+        <el-input v-model="withdrawAmount" placeholder="Amount" size="small" type="number" style="margin-top:12px" />
+        <el-button type="primary" style="margin-top:16px;width:100%" @click="doWithdraw">确认Withdraw</el-button>
       </div>
     </el-dialog>
   </div>
@@ -133,7 +133,7 @@ export default {
     
     copyAddress() {
       navigator.clipboard?.writeText(this.depositAddress);
-      this.$message.success('地址已复制');
+      this.$message.success('Address copied');
     },
     
     showWithdraw(item) {
@@ -145,18 +145,18 @@ export default {
     
     doWithdraw() {
       if (!this.withdrawAddress || !this.withdrawAmount) {
-        this.$message.warning('请填写完整信息');
+        this.$message.warning('Fill in all fields');
         return;
       }
       const item = this.balances.find(b => b.coin === this.withdrawCoin);
       if (item && parseFloat(this.withdrawAmount) > item.balance) {
-        this.$message.error('余额不足');
+        this.$message.error('Insufficient balance');
         return;
       }
       item.balance -= parseFloat(this.withdrawAmount);
       item.usdtValue = item.balance * item.price;
       this.withdrawVisible = false;
-      this.$message.success('提现成功');
+      this.$message.success('Withdraw成功');
     }
   },
   

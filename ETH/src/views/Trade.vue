@@ -1,8 +1,8 @@
 <template>
   <div class="trade-page">
-    <!-- 交易对选择 -->
+    <!-- Pair Selector -->
     <header class="trade-header">
-      <el-select v-model="activePair" placeholder="选择交易对" size="small" class="pair-select">
+      <el-select v-model="activePair" placeholder="Select Pair" size="small" class="pair-select">
         <el-option 
           v-for="p in pairs" :key="p" :label="p" :value="p"
         />
@@ -12,27 +12,27 @@
       </span>
     </header>
 
-    <!-- K线图 -->
+    <!-- KChart -->
     <div ref="klineChart" class="kline-area"></div>
 
-    <!-- 下单面板 -->
+    <!-- Trade Panel -->
     <div class="trade-panel">
       <div class="panel-tabs">
-        <span :class="{ active: side === 'buy' }" @click="side = 'buy'">买入</span>
-        <span :class="{ active: side === 'sell' }" @click="side = 'sell'">卖出</span>
+        <span :class="{ active: side === 'buy' }" @click="side = 'buy'">Buy</span>
+        <span :class="{ active: side === 'sell' }" @click="side = 'sell'">Sell</span>
       </div>
       
       <div class="panel-form">
         <div class="form-row">
-          <label>类型</label>
+          <label>Type</label>
           <el-radio-group v-model="orderType" size="small">
-            <el-radio-button label="limit">限价</el-radio-button>
-            <el-radio-button label="market">市价</el-radio-button>
+            <el-radio-button label="limit">Limit</el-radio-button>
+            <el-radio-button label="market">Market</el-radio-button>
           </el-radio-group>
         </div>
         
         <div class="form-row" v-if="orderType === 'limit'">
-          <label>价格 (USDT)</label>
+          <label>Price (USDT)</label>
           <el-input-number 
             v-model="orderPrice" 
             :precision="2" :min="0"
@@ -42,7 +42,7 @@
         </div>
         
         <div class="form-row">
-          <label>数量 ({{ coin }})</label>
+          <label>Amount ({{ coin }})</label>
           <el-input-number 
             v-model="orderAmount" 
             :precision="4" :min="0"
@@ -52,7 +52,7 @@
         </div>
         
         <div class="form-row">
-          <label>总额</label>
+          <label>Total</label>
           <span class="form-value">{{ fmtPrice(orderTotal) }} USDT</span>
         </div>
         
@@ -63,14 +63,14 @@
           @click="placeOrder"
           :loading="submitting"
         >
-          {{ side === 'buy' ? '买入' : '卖出' }} {{ coin }}
+          {{ side === 'buy' ? 'Buy' : 'Sell' }} {{ coin }}
         </el-button>
       </div>
     </div>
 
-    <!-- 订单簿（模拟） -->
+    <!-- Order Book（） -->
     <div class="orderbook">
-      <h4>订单簿</h4>
+      <h4>Order Book</h4>
       <div class="book-columns">
         <div class="book-side asks">
           <div v-for="(row, i) in asks" :key="'a'+i" class="book-row">
@@ -90,24 +90,24 @@
       </div>
     </div>
 
-    <!-- 当前委托 -->
+    <!-- Open Orders -->
     <div class="orders-section">
-      <h4>当前委托</h4>
-      <el-table :data="orders" size="small" empty-text="暂无委托">
-        <el-table-column prop="side" label="方向" width="60">
+      <h4>Open Orders</h4>
+      <el-table :data="orders" size="small" empty-text="No orders">
+        <el-table-column prop="side" label="Direction" width="60">
           <template #default="{ row }">
             <span :class="row.side === 'buy' ? 'text-up' : 'text-down'">
-              {{ row.side === 'buy' ? '买' : '卖' }}
+              {{ row.side === 'buy' ? 'Buy' : 'Sell' }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="价格" />
-        <el-table-column prop="amount" label="数量" />
-        <el-table-column prop="total" label="总额" />
-        <el-table-column prop="status" label="状态" />
-        <el-table-column label="操作" width="60">
+        <el-table-column prop="price" label="Price" />
+        <el-table-column prop="amount" label="Amount" />
+        <el-table-column prop="total" label="Total" />
+        <el-table-column prop="status" label="Status" />
+        <el-table-column label="Action" width="60">
           <template #default="{ row }">
-            <el-button type="text" size="mini" @click="cancelOrder(row.id)">撤单</el-button>
+            <el-button type="text" size="mini" @click="cancelOrder(row.id)">Cancel</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -159,7 +159,7 @@ export default {
     renderKline() {
       if (!echarts || !this.$refs.klineChart) return;
       if (!this.klineChart) this.klineChart = echarts.init(this.$refs.klineChart);
-      // 生成模拟K线
+      // GenerateK线
       const base = parseFloat(this.currentPrice) || 80000;
       const dates = [], values = [], volumes = [];
       for (let i = 30; i >= 0; i--) {
@@ -201,7 +201,7 @@ export default {
     },
     
     async placeOrder() {
-      if (!this.orderAmount) { this.$message.warning('请输入数量'); return; }
+      if (!this.orderAmount) { this.$message.warning('Enter amount'); return; }
       this.submitting = true;
       try {
         const res = await apiPlaceOrder({
@@ -212,11 +212,11 @@ export default {
           amount: this.orderAmount
         });
         if (res.code === 200) {
-          this.$message.success(`${this.side === 'buy' ? '买入' : '卖出'}成功`);
+          this.$message.success(`${this.side === 'buy' ? 'Buy' : 'Sell'}success`);
           this.fetchOrders();
           this.fetchOrderBook();
         } else {
-          this.$message.error(res.msg || '下单失败');
+          this.$message.error(res.msg || 'Order failed');
         }
       } catch(e) { this.$message.error(e.message); }
       this.submitting = false;
@@ -226,7 +226,7 @@ export default {
       try {
         await apiCancel({ orderId: id });
         this.orders = this.orders.filter(o => o.id !== id);
-        this.$message.info('已撤单');
+        this.$message.info('Cancel');
       } catch(e) {}
     },
     
