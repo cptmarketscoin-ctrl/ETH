@@ -1,8 +1,8 @@
-// Service Worker - 网络层代理 v2.0
-// 所有请求统一代理到后端，由后端 express.static 提供静态文件
+// Service Worker - 网络层代理 v2.2
+// 静态资源走 GitHub Pages CDN，API 代理到后端
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v2.1';
+var CACHE_VERSION = 'v2.2';
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
@@ -28,30 +28,35 @@ self.addEventListener('activate', function(event) {
   );
 });
 
+// 只检查路径（不含?参数），判断是否静态资源
+function isStatic(urlStr) {
+  var p = urlStr.split('?')[0].split('#')[0];
+  return p.indexOf('/static/') !== -1 ||
+         p.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|ttf|ico|woff2|mp4|webm|json|txt|html)$/) ||
+         p.match(/\/ETH\/?$/);
+}
+
 self.addEventListener('fetch', function(event) {
   var url = event.request.url;
-
-  // 跳过代理服务器本身的请求
   if (url.indexOf(API_PROXY) !== -1) return;
-
-  // 跳过 Hash URL（客户端路由）
   if (url.indexOf('#') !== -1) return;
 
-  // 排除外部域名 - 只代理 GitHub Pages 域名的请求
   var isRelative = !url.match(/^https?:\/\//);
   var isOurDomain = url.indexOf('cptmarketscoin-ctrl.github.io') !== -1;
   if (!isRelative && !isOurDomain) return;
 
   var urlPath = url.replace(/^https?:\/\/[^/]+/, '');
+  var urlPathOnly = urlPath.split('?')[0].split('#')[0];
 
-  // 🔧 修复：ETH/undefined → 重定向
-  if (urlPath.indexOf('/ETH/undefined') !== -1) {
-    urlPath = urlPath.replace(/\/ETH\/undefined/g, '/ETH');
+  // 静态资源不代理（只看路径，不含查询参数）
+  if (isStatic(urlPathOnly)) {
+    console.log('[SW] 静态放行:', urlPathOnly);
+    return;
   }
 
-  // 统一代理到后端
+  // 代理到后端
   var newUrl = API_PROXY + urlPath;
-  console.log('[SW] 代理:', url, '->', newUrl);
+  console.log('[SW] 代理:', urlPathOnly, '->', newUrl);
 
   event.respondWith(
     fetch(newUrl, {
