@@ -14,8 +14,9 @@
       class="app-tabbar"
     >
       <van-tabbar-item to="/" icon="home-o">Home</van-tabbar-item>
-      <van-tabbar-item to="/market" icon="chart-trending-o">Markets</van-tabbar-item>
+      <van-tabbar-item to="/market" icon="chart-trending-o">Market</van-tabbar-item>
       <van-tabbar-item to="/trade" icon="gold-coin-o">Trade</van-tabbar-item>
+      <van-tabbar-item to="/earn" icon="gift-o">Earn</van-tabbar-item>
       <van-tabbar-item to="/assets" icon="balance-o">Assets</van-tabbar-item>
     </van-tabbar>
   </div>
@@ -38,7 +39,7 @@ export default {
   },
   watch: {
     $route(to) {
-      const map = { '/': 0, '/market': 1, '/trade': 2, '/assets': 3 };
+      const map = { '/': 0, '/market': 1, '/trade': 2, '/earn': 3, '/assets': 4 };
       this.active = map[to.path] !== undefined ? map[to.path] : this.active;
     }
   }
