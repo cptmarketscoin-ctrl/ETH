@@ -2,7 +2,7 @@
 // 静态资源走 GitHub Pages CDN，API 代理到后端
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v2.2';
+var CACHE_VERSION = 'v3.0';
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
