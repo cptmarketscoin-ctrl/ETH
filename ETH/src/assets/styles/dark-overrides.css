@@ -1,0 +1,40 @@
+/* ===== Element UI + Vant 暗色覆盖 ===== */
+.el-input__inner,
+.el-input__inner:hover,
+.el-select .el-input__inner,
+.van-cell,
+.van-field__control,
+.el-button--default {
+  background: var(--bg-card) !important;
+  border-color: var(--border-1) !important;
+  color: var(--text-1) !important;
+}
+.el-input__inner::placeholder,
+.van-field__control::placeholder { color: var(--text-4) !important; }
+.el-table,
+.el-table th,
+.el-table tr,
+.el-table td {
+  background: var(--bg-white) !important;
+  color: var(--text-2) !important;
+  border-color: var(--border-1) !important;
+}
+.el-table th { background: var(--bg-card) !important; color: var(--text-1) !important; }
+.el-table--enable-row-hover .el-table__body tr:hover > td { background: var(--bg-hover) !important; }
+.el-dialog { background: var(--bg-white) !important; }
+.el-dialog__title, .el-dialog__body { color: var(--text-1) !important; }
+.el-radio-button__inner { background: var(--bg-card) !important; border-color: var(--border-1) !important; color: var(--text-2) !important; }
+.el-radio-button__orig-radio:checked + .el-radio-button__inner { background: var(--primary) !important; color: #fff !important; }
+.el-message { background: var(--bg-card) !important; border-color: var(--border-1) !important; }
+.el-message__content { color: var(--text-1) !important; }
+.van-tabbar { background: var(--bg-white) !important; border-color: var(--border-1) !important; }
+.van-tabbar-item { color: var(--text-3) !important; }
+.van-tabbar-item--active { color: var(--primary) !important; }
+.el-select-dropdown, .el-popper { background: var(--bg-card) !important; border-color: var(--border-1) !important; }
+.el-select-dropdown__item { color: var(--text-2) !important; }
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background: var(--bg-hover) !important; }
+.el-select-dropdown__item.selected { color: var(--primary) !important; }
+.el-loading-mask { background: rgba(27, 28, 32, 0.8) !important; }
+
+/* app.vue tabbar */
+.app-tabbar { --van-tabbar-item-active-color: var(--primary); --van-tabbar-background: var(--bg-white); }

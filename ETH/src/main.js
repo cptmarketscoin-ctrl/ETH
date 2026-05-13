@@ -14,6 +14,7 @@ import 'vant/lib/index.css';
 // 全局样式
 import './assets/styles/variables.scss';
 import './assets/styles/global.scss';
+import './assets/styles/dark-overrides.css';
 
 Vue.use(ElementUI);
 Vue.use(Vant);

@@ -197,19 +197,13 @@ export default {
 
 .coin-list {
   .coin-row {
-    display: flex; align-items: center; padding: var(--sp-md);
-    background: var(--bg-white); border-bottom: 1px solid var(--border-3); cursor: pointer;
+    display: flex; align-items: center; padding: 12px 16px;
+    background: var(--bg-white); border-bottom: 1px solid var(--border-2); cursor: pointer;
     transition: background var(--transition-fast);
     &:hover { background: var(--bg-hover); }
-    
-    .coin-left {
-      display: flex; align-items: center; gap: var(--sp-sm); flex: 1;
-      .coin-icon { width: 24px; height: 24px; border-radius: 50%; }
-      .coin-name { font-weight: 600; }
-      .coin-pair { font-size: var(--fs-xs); color: var(--text-3); margin-left: var(--sp-xs); }
-    }
+    .coin-left { display: flex; align-items: center; gap: var(--sp-sm); flex: 1; .coin-icon { width: 24px; height: 24px; border-radius: 50%; } .coin-name { font-weight: 600; } .coin-pair { font-size: var(--fs-xs); color: var(--text-3); margin-left: 4px; } }
     .coin-star { flex: 0 0 24px; font-size: 16px; cursor: pointer; }
-    .coin-price { flex: 1; text-align: right; }
+    .coin-price { flex: 1; text-align: right; font-family: var(--font-mono); }
     .coin-change { flex: 0 0 80px; text-align: right; font-weight: 600; font-size: var(--fs-sm); }
     .coin-volume { flex: 0 0 80px; text-align: right; font-size: var(--fs-sm); color: var(--text-3); }
   }

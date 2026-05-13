@@ -227,39 +227,19 @@ export default {
 }
 
 .home-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--sp-lg) 0;
-  
-  .logo-text {
-    font-size: var(--fs-xl);
-    font-weight: 700;
-    color: var(--text-1);
-  }
-  
-  .search-input {
-    width: 240px;
-    @media (max-width: 480px) { width: 160px; }
-  }
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--bg-white); border-radius: var(--radius-lg);
+  margin-bottom: var(--sp-lg);
+  .logo-text { font-size: var(--fs-xl); font-weight: 700; color: var(--text-1); }
+  .search-input { width: 240px; }
 }
 
+.home-header .el-input__inner { background: var(--bg-card) !important; border-color: var(--border-1) !important; }
+
 .market-overview {
-  display: flex;
-  gap: var(--sp-lg);
-  margin-bottom: var(--sp-xl);
-  padding: var(--sp-lg);
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-xs);
-    
-    .stat-label { font-size: var(--fs-sm); color: var(--text-3); }
-    .stat-value { font-size: var(--fs-lg); font-weight: 600; }
-  }
+  display: flex; gap: var(--sp-lg); margin-bottom: var(--sp-lg);
+  padding: var(--sp-lg); background: var(--bg-white); border-radius: var(--radius-lg);
+  .stat-item { display: flex; flex-direction: column; gap: 4px; .stat-label { font-size: var(--fs-sm); color: var(--text-3); } .stat-value { font-size: var(--fs-lg); font-weight: 700; } }
 }
 
 .coin-grid {
@@ -273,74 +253,27 @@ export default {
 
 .coin-card {
   cursor: pointer;
-  transition: transform var(--transition-fast);
-  
-  &:hover { transform: translateY(-2px); }
-  
-  .coin-header {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-sm);
-    margin-bottom: var(--sp-md);
-    
-    .coin-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-    }
-    
-    .coin-info {
-      display: flex;
-      flex-direction: column;
-      
-      .coin-name { font-weight: 600; font-size: var(--fs-md); }
-      .coin-pair { font-size: var(--fs-xs); color: var(--text-3); }
-    }
-  }
-  
-  .coin-price {
-    margin-bottom: var(--sp-sm);
-    .price-text { font-weight: 700; }
-  }
-  
-  .coin-change {
-    font-size: var(--fs-sm);
-    margin-bottom: var(--sp-sm);
-    font-weight: 600;
-  }
-  
-  .coin-volume {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--fs-xs);
-    color: var(--text-3);
-  }
+  padding: var(--sp-lg);
+  border: 1px solid var(--border-1);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  &:hover { transform: translateY(-2px); border-color: var(--primary); }
+  .coin-header { display: flex; align-items: center; gap: var(--sp-sm); margin-bottom: var(--sp-md); .coin-icon { width: 28px; height: 28px; border-radius: 50%; } }
+  .coin-info { .coin-name { font-weight: 600; font-size: var(--fs-md); } .coin-pair { font-size: var(--fs-xs); color: var(--text-3); } }
+  .coin-price { margin-bottom: var(--sp-sm); }
+  .coin-change { font-size: var(--fs-sm); margin-bottom: 4px; font-weight: 600; }
+  .coin-kline { margin: var(--sp-sm) 0; }
+  .coin-volume { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--text-3); }
 }
 
 .news-section {
   margin-top: var(--sp-xl);
-  
-  .section-title {
-    font-size: var(--fs-lg);
-    margin-bottom: var(--sp-md);
-  }
-  
+  .section-title { font-size: var(--fs-lg); margin-bottom: var(--sp-md); }
   .news-scroll {
-    display: flex;
-    gap: var(--sp-md);
-    overflow-x: auto;
-    padding-bottom: var(--sp-sm);
-    
+    display: flex; gap: var(--sp-md); overflow-x: auto; padding-bottom: var(--sp-sm);
     .news-item {
-      display: flex;
-      gap: var(--sp-sm);
-      padding: var(--sp-sm) var(--sp-md);
-      background: var(--bg-white);
-      border-radius: var(--radius-round);
-      white-space: nowrap;
-      font-size: var(--fs-sm);
-      flex-shrink: 0;
-      
+      display: flex; gap: var(--sp-sm); padding: 8px 16px; background: var(--bg-white);
+      border-radius: 20px; white-space: nowrap; font-size: var(--fs-sm); flex-shrink: 0;
+      border: 1px solid var(--border-1);
       .news-coin { font-weight: 600; }
       .news-change { font-weight: 600; }
     }
