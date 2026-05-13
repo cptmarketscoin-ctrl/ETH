@@ -2,7 +2,7 @@
 // 与 index.html 内联代理逻辑保持一致
 var API_PROXY = 'https://api.cptnexus.sbs';
 var BASE_PATH = '/ETH';
-var CACHE_VERSION = 'v1.7-20260513';  // v1.7: 放行.html页面+入口路径
+var CACHE_VERSION = 'v1.8-20260513';  // v1.8: getFile 强制代理
 
 self.addEventListener('install', function(event) {
   console.log('[SW] 安装中...', CACHE_VERSION);
@@ -35,6 +35,8 @@ self.addEventListener('activate', function(event) {
 
 // 检查是否是静态资源
 function isStatic(urlStr) {
+  // getFile 必须代理到后端，不是静态资源
+  if (urlStr.indexOf('rockieFile/getFile') !== -1) return false;
   return urlStr.indexOf('/static/') !== -1 ||
          urlStr.indexOf('/ETH/static/') === 0 ||
          urlStr.indexOf('/ETH/img/') === 0 ||
